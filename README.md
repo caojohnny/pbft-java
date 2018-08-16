@@ -16,7 +16,7 @@ mvn install
 
 Built with [IntelliJ IDEA](https://www.jetbrains.com/idea/)
 
-# Sources
+# References
 
   - [Practical Byzantine Fault Tolerance](http://pmg.csail.mit.edu/papers/osdi99.pdf)
   - [Practical BFT](https://courses.cs.washington.edu/courses/csep552/13sp/lectures/10/pbft.pdf)
