@@ -21,15 +21,15 @@ public class PrePrepare implements Message {
         return TYPE;
     }
 
-    public int getViewNumber() {
+    public int viewNumber() {
         return this.viewNumber;
     }
 
-    public int getSeqNumber() {
+    public int seqNumber() {
         return this.seqNumber;
     }
 
-    public byte[] getDigest() {
+    public byte[] digest() {
         return this.digest;
     }
 }

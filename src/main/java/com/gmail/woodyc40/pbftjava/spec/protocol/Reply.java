@@ -26,23 +26,23 @@ public class Reply<R> implements Message {
         return TYPE;
     }
 
-    public int getViewNumber() {
+    public int viewNumber() {
         return this.viewNumber;
     }
 
-    public long getTimestamp() {
+    public long timestamp() {
         return this.timestamp;
     }
 
-    public Client getClient() {
+    public Client client() {
         return this.client;
     }
 
-    public int getReplicaNumber() {
+    public int replicaNumber() {
         return this.replicaNumber;
     }
 
-    public R getResponse() {
+    public R response() {
         return this.response;
     }
 }

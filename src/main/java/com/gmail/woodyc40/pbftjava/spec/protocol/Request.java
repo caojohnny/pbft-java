@@ -22,15 +22,15 @@ public class Request<Op> implements Message {
         return TYPE;
     }
 
-    public Op getOperation() {
+    public Op operation() {
         return this.operation;
     }
 
-    public long getTimestamp() {
+    public long timestamp() {
         return this.timestamp;
     }
 
-    public Client getClient() {
+    public Client client() {
         return this.client;
     }
 }

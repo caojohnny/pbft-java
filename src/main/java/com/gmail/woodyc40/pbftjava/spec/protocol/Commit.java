@@ -22,4 +22,20 @@ public class Commit implements Message {
     public MessageType type() {
         return TYPE;
     }
+
+    public int viewNumber() {
+        return this.viewNumber;
+    }
+
+    public int seqNumber() {
+        return this.seqNumber;
+    }
+
+    public byte[] digest() {
+        return this.digest;
+    }
+
+    public int id() {
+        return this.id;
+    }
 }
