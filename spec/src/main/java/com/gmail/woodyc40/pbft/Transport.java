@@ -1,4 +1,7 @@
 package com.gmail.woodyc40.pbft;
 
-public class Transport {
+public interface Transport<T> {
+    void send(int targetId, T encodedMsg);
+
+    T recv();
 }

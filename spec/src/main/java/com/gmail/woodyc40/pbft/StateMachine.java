@@ -1,11 +1,8 @@
 package com.gmail.woodyc40.pbft;
 
 import com.gmail.woodyc40.pbft.protocol.*;
-import com.gmail.woodyc40.pbft.spec.protocol.*;
 
-public interface StateMachine<Op, R> extends Node {
-    int id();
-
+public interface StateMachine<Op, R, T> extends Node<Op, R, T> {
     void primaryRecvReq(Request<Op> request);
 
     void relayRequest(Request<Op> request);

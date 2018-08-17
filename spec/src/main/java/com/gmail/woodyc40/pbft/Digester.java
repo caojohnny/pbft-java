@@ -1,4 +1,7 @@
 package com.gmail.woodyc40.pbft;
 
-public class Digester {
+import com.gmail.woodyc40.pbft.protocol.Request;
+
+public interface Digester<Op> {
+    byte[] digest(Request<Op> request);
 }

@@ -1,11 +1,13 @@
 package com.gmail.woodyc40.pbft;
 
-public interface Node {
+public interface Node<Op, R, T> {
+    int id();
+
     int tolerance();
 
-    Digester digester();
+    Digester<Op> digester();
 
-    Encoder encoder();
+    Encoder<Op, R, T> encoder();
 
-    Transport transport();
+    Transport<T> transport();
 }
