@@ -1,8 +1,8 @@
-package com.gmail.woodyc40.pbft.spec.protocol;
+package com.gmail.woodyc40.pbft.protocol;
 
-import com.gmail.woodyc40.pbft.spec.Client;
-import com.gmail.woodyc40.pbft.spec.Message;
-import com.gmail.woodyc40.pbft.spec.MessageType;
+import com.gmail.woodyc40.pbft.Client;
+import com.gmail.woodyc40.pbft.Message;
+import com.gmail.woodyc40.pbft.MessageType;
 
 public class Reply<R> implements Message {
     private static final MessageType TYPE = MessageType.REPLY;

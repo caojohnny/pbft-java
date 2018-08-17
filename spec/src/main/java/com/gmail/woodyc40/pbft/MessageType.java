@@ -1,6 +1,6 @@
-package com.gmail.woodyc40.pbft.spec;
+package com.gmail.woodyc40.pbft;
 
-public enum  MessageType {
+public enum MessageType {
     REQUEST,
     PRE_PREPARE,
     PREPARE,

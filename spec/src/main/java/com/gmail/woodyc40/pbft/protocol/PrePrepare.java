@@ -1,7 +1,7 @@
-package com.gmail.woodyc40.pbft.spec.protocol;
+package com.gmail.woodyc40.pbft.protocol;
 
-import com.gmail.woodyc40.pbft.spec.Message;
-import com.gmail.woodyc40.pbft.spec.MessageType;
+import com.gmail.woodyc40.pbft.Message;
+import com.gmail.woodyc40.pbft.MessageType;
 
 public class PrePrepare implements Message {
     private static final MessageType TYPE = MessageType.PRE_PREPARE;

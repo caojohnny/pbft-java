@@ -1,16 +1,10 @@
-package com.gmail.woodyc40.pbft.spec;
+package com.gmail.woodyc40.pbft;
 
+import com.gmail.woodyc40.pbft.protocol.*;
 import com.gmail.woodyc40.pbft.spec.protocol.*;
-import com.gmail.woodyc40.pbftjava.spec.protocol.*;
 
-public interface StateMachine<Op, R> {
+public interface StateMachine<Op, R> extends Node {
     int id();
-
-    int tolerance();
-
-    Digester digester();
-
-    MessageEncoder encoder();
 
     void primaryRecvReq(Request<Op> request);
 

@@ -11,7 +11,7 @@
     <groupId>com.gmail.woodyc40</groupId>
     <artifactId>pbft-java</artifactId>
     <packaging>pom</packaging>
-    <version>${pbft-version}</version>
+    <version>1.0-SNAPSHOT</version>
 
     <modules>
         <module>spec</module>
