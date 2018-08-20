@@ -1,4 +1,7 @@
 package com.gmail.woodyc40.pbft;
 
-public class Roster {
+import java.util.Collection;
+
+public interface Roster {
+    Collection<String> servers();
 }

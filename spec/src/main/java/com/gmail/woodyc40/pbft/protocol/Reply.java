@@ -1,6 +1,5 @@
 package com.gmail.woodyc40.pbft.protocol;
 
-import com.gmail.woodyc40.pbft.Client;
 import com.gmail.woodyc40.pbft.Message;
 import com.gmail.woodyc40.pbft.MessageType;
 
@@ -9,14 +8,14 @@ public class Reply<R> implements Message {
 
     private final int viewNumber;
     private final long timestamp;
-    private final Client client;
+    private final String clientId;
     private final int replicaNumber;
     private final R response;
 
-    public Reply(int viewNumber, long timestamp, Client client, int replicaNumber, R response) {
+    public Reply(int viewNumber, long timestamp, String clientId, int replicaNumber, R response) {
         this.viewNumber = viewNumber;
         this.timestamp = timestamp;
-        this.client = client;
+        this.clientId = clientId;
         this.replicaNumber = replicaNumber;
         this.response = response;
     }
@@ -34,8 +33,8 @@ public class Reply<R> implements Message {
         return this.timestamp;
     }
 
-    public Client client() {
-        return this.client;
+    public String client() {
+        return this.clientId;
     }
 
     public int replicaNumber() {

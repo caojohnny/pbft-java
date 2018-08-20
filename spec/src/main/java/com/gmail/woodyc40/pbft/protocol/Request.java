@@ -1,6 +1,5 @@
 package com.gmail.woodyc40.pbft.protocol;
 
-import com.gmail.woodyc40.pbft.Client;
 import com.gmail.woodyc40.pbft.Message;
 import com.gmail.woodyc40.pbft.MessageType;
 
@@ -9,12 +8,12 @@ public class Request<Op> implements Message {
 
     private final Op operation;
     private final long timestamp;
-    private final Client client;
+    private final String clientId;
 
-    public Request(Op operation, long timestamp, Client client) {
+    public Request(Op operation, long timestamp, String clientId) {
         this.operation = operation;
         this.timestamp = timestamp;
-        this.client = client;
+        this.clientId = clientId;
     }
 
     @Override
@@ -30,7 +29,7 @@ public class Request<Op> implements Message {
         return this.timestamp;
     }
 
-    public Client client() {
-        return this.client;
+    public String client() {
+        return this.clientId;
     }
 }

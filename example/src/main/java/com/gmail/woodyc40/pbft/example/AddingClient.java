@@ -31,8 +31,8 @@ public class AddingClient implements Client<AdditionOperation, AdditionResult, J
     }
 
     @Override
-    public int id() {
-        return 0;
+    public String id() {
+        return "client";
     }
 
     @Override
