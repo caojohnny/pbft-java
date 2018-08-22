@@ -3,11 +3,11 @@ package com.gmail.woodyc40.pbft;
 import com.gmail.woodyc40.pbft.protocol.*;
 
 public interface StateMachine<Op, R, T> extends Node<Op, R, T> {
+    State state();
+
     void primaryRecvReq(Request<Op> request);
 
-    void relayRequest(Request<Op> request);
-
-    void sendPrePrepare(byte[] requestDigest);
+    void sendPrePrepare(Request<Op> request);
 
     void recvPrePrepare(PrePrepare prePrepare);
 
@@ -24,4 +24,16 @@ public interface StateMachine<Op, R, T> extends Node<Op, R, T> {
     boolean commitedLocal(int replica);
 
     void sendReply(Reply<R> reply);
+
+    void sendCheckpoint(Checkpoint checkpoint);
+
+    void recvCheckpoint(Checkpoint checkpoint);
+
+    void sendViewChange(ViewChange viewChange);
+
+    void recvViewChange(ViewChange viewChange);
+
+    void sendNewView(NewView newView);
+
+    void recvNewView(NewView newView);
 }

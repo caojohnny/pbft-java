@@ -3,9 +3,11 @@ package com.gmail.woodyc40.pbft;
 public interface Node<Op, R, T> {
     String id();
 
+    long timeout();
+
     int tolerance();
 
-    long timeout();
+    Roster roster();
 
     Digester<Op> digester();
 

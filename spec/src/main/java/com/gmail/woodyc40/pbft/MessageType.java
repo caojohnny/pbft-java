@@ -5,5 +5,10 @@ public enum MessageType {
     PRE_PREPARE,
     PREPARE,
     COMMIT,
-    REPLY
+    REPLY,
+
+    CHECKPOINT,
+
+    VIEW_CHANGE,
+    NEW_VIEW
 }

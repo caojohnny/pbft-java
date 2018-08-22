@@ -15,6 +15,12 @@ public interface Encoder<Op, R, T> {
                 return this.encodeCommit((Commit) msg);
             case REPLY:
                 return this.encodeReply((Reply<R>) msg);
+            case CHECKPOINT:
+                return this.encodeCheckpoint((Checkpoint) msg);
+            case VIEW_CHANGE:
+                return this.encodeViewChange((ViewChange) msg);
+            case NEW_VIEW:
+                return this.encodeNewView((NewView) msg);
             default:
                 throw new IllegalArgumentException("Passed a non-message");
         }
@@ -30,6 +36,12 @@ public interface Encoder<Op, R, T> {
 
     T encodeReply(Reply<R> reply);
 
+    T encodeCheckpoint(Checkpoint checkpoint);
+
+    T encodeViewChange(ViewChange viewChange);
+
+    T encodeNewView(NewView newView);
+
     Request<Op> decodeRequest(T encoded);
 
     PrePrepare decodePrePrepare(T encoded);
@@ -39,4 +51,10 @@ public interface Encoder<Op, R, T> {
     Commit decodeCommit(T encoded);
 
     Reply<R> decodeReply(T encoded);
+
+    Checkpoint decodeCheckpoint(T encoded);
+
+    ViewChange decodeViewChange(T encoded);
+
+    NewView decodeNewView(T encoded);
 }
