@@ -31,6 +31,11 @@ public abstract class AbstractStateMachine<Op, R, T>
     }
 
     @Override
+    public Roster roster() {
+        return this.options.roster();
+    }
+
+    @Override
     public Digester<Op> digester() {
         return this.options.digester();
     }
