@@ -8,31 +8,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class DefaultClient<Op, R, T> extends AbstractClient<Op, R, T> {
-    private final AtomicLong lastTimestamp = new AtomicLong();
+    private final AtomicLong timestampCounter = new AtomicLong();
     private final Map<Long, ResultTicket<Op, R>> ticketMap =
             new ConcurrentHashMap<>();
 
-    public DefaultClient(String id, long timeout, NodeOptions<Op, R, T> options) {
+    public DefaultClient(String id,
+                         long timeout,
+                         NodeOptions<Op, R, T> options) {
         super(id, timeout, options);
     }
 
     protected long nextTimestamp() {
-        long lastTimestamp;
-        long nextTimestamp;
-        do {
-            lastTimestamp = this.lastTimestamp.get();
-
-            do {
-                nextTimestamp = System.nanoTime();
-            } while (nextTimestamp == lastTimestamp);
-        } while (!this.lastTimestamp.compareAndSet(lastTimestamp, nextTimestamp));
-
-        return nextTimestamp;
-    }
-
-    protected String primary() {
-        // TODO: How to know which primary to use?
-        return "";
+        return this.timestampCounter.incrementAndGet();
     }
 
     public long send(Op operation) {
@@ -77,7 +64,7 @@ public class DefaultClient<Op, R, T> extends AbstractClient<Op, R, T> {
         Request<Op> request = new Request<>(operation, timestamp, this.id());
 
         T encoded = this.encoder().encode(request);
-        this.transport().send(this.primary(), encoded);
+        this.transport().send(this.transport().primaryId(), encoded);
 
         return request;
     }
