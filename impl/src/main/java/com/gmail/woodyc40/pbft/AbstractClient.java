@@ -1,26 +1,15 @@
 package com.gmail.woodyc40.pbft;
 
 public abstract class AbstractClient<Op, T, R> implements Client<Op, T, R> {
-    private final String id;
-    private final long timeout;
     private final NodeOptions<Op, T, R> options;
 
-    protected AbstractClient(String id,
-                             long timeout,
-                             NodeOptions<Op, T, R> options) {
-        this.id = id;
-        this.timeout = timeout;
+    protected AbstractClient(NodeOptions<Op, T, R> options) {
         this.options = options;
     }
 
     @Override
-    public String id() {
-        return this.id;
-    }
-
-    @Override
     public long timeout() {
-        return this.timeout;
+        return this.options.timeout();
     }
 
     @Override

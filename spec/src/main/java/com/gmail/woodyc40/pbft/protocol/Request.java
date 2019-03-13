@@ -8,9 +8,9 @@ public class Request<Op> implements Message {
 
     private final Op operation;
     private final long timestamp;
-    private final String clientId;
+    private final int clientId;
 
-    public Request(Op operation, long timestamp, String clientId) {
+    public Request(Op operation, long timestamp, int clientId) {
         this.operation = operation;
         this.timestamp = timestamp;
         this.clientId = clientId;
@@ -29,7 +29,7 @@ public class Request<Op> implements Message {
         return this.timestamp;
     }
 
-    public String client() {
+    public int client() {
         return this.clientId;
     }
 }

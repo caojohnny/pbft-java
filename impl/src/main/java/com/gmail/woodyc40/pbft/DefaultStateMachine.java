@@ -5,19 +5,27 @@ import com.gmail.woodyc40.pbft.protocol.*;
 // TODO: Implement
 public class DefaultStateMachine<Op, R, T>
         extends AbstractStateMachine<Op, T, R> {
-    protected DefaultStateMachine(String id,
-                                  long timeout,
+    protected DefaultStateMachine(int id,
+                                  Verifier<Op> verifier,
                                   NodeOptions<Op, T, R> options) {
-        super(id, timeout, options);
-    }
-
-    @Override
-    public State state() {
-        return null;
+        super(id, verifier, options);
     }
 
     @Override
     public void primaryRecvReq(Request<Op> request) {
+        if (this.id() != this.transport().primaryId()) {
+            return;
+        }
+
+        // TODO: Check progress of other requests
+
+        if (!this.verifier().verifyRequest(request)) {
+            return;
+        }
+
+        R encodedMsg = this.encoder().encode(request);
+        this.transport().multicast(this.roster(), encodedMsg);
+        this.state(State.PREPARE);
     }
 
     @Override

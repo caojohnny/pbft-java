@@ -3,6 +3,10 @@ package com.gmail.woodyc40.pbft;
 import com.gmail.woodyc40.pbft.protocol.*;
 
 public interface StateMachine<Op, R, T> extends Node<Op, R, T> {
+    int id();
+
+    Verifier<Op> verifier();
+
     State state();
 
     void primaryRecvReq(Request<Op> request);

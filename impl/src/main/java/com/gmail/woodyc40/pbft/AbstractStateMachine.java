@@ -2,27 +2,42 @@ package com.gmail.woodyc40.pbft;
 
 public abstract class AbstractStateMachine<Op, R, T>
         implements StateMachine<Op, R, T> {
-    private final String id;
-    private final long timeout;
+    private final int id;
+    private final Verifier<Op> verifier;
     private final NodeOptions<Op, R, T> options;
 
-    protected AbstractStateMachine(String id,
-                                   long timeout,
+    private State state = State.PRE_PREPARE;
+
+    protected AbstractStateMachine(int id,
+                                   Verifier<Op> verifier,
                                    NodeOptions<Op, R, T> options) {
         this.id = id;
-        this.timeout = timeout;
+        this.verifier = verifier;
         this.options = options;
     }
 
-
     @Override
-    public String id() {
+    public int id() {
         return this.id;
     }
 
     @Override
+    public Verifier<Op> verifier() {
+        return this.verifier;
+    }
+
+    @Override
+    public State state() {
+        return this.state;
+    }
+
+    protected void state(State state) {
+        this.state = state;
+    }
+
+    @Override
     public long timeout() {
-        return this.timeout;
+        return this.options.timeout();
     }
 
     @Override
