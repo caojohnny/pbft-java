@@ -12,10 +12,8 @@ public class DefaultClient<Op, R, T> extends AbstractClient<Op, R, T> {
     private final Map<Long, ResultTicket<Op, R>> ticketMap =
             new ConcurrentHashMap<>();
 
-    public DefaultClient(String id,
-                         long timeout,
-                         NodeOptions<Op, R, T> options) {
-        super(id, timeout, options);
+    public DefaultClient(NodeOptions<Op, R, T> options) {
+        super(options);
     }
 
     protected long nextTimestamp() {
@@ -23,7 +21,7 @@ public class DefaultClient<Op, R, T> extends AbstractClient<Op, R, T> {
     }
 
     public long send(Op operation) {
-        Request<Op> request = this.sendRequest(operation);
+        Request<Op, R, T> request = this.sendRequest(operation);
         long timestamp = request.timestamp();
         this.ticketMap.put(timestamp, new ResultTicket<>(request, this.tolerance()));
 
@@ -59,9 +57,9 @@ public class DefaultClient<Op, R, T> extends AbstractClient<Op, R, T> {
     }
 
     @Override
-    public Request<Op> sendRequest(Op operation) {
+    public Request<Op, R, T> sendRequest(Op operation) {
         long timestamp = this.nextTimestamp();
-        Request<Op> request = new Request<>(operation, timestamp, this.id());
+        Request<Op, R, T> request = new Request<>(operation, timestamp, this);
 
         T encoded = this.encoder().encode(request);
         this.transport().send(this.transport().primaryId(), encoded);
@@ -69,7 +67,7 @@ public class DefaultClient<Op, R, T> extends AbstractClient<Op, R, T> {
         return request;
     }
 
-    protected void multicastRequest(Request<Op> request) {
+    protected void multicastRequest(Request<Op, R, T> request) {
         T encoded = this.encoder().encode(request);
         this.transport().multicast(this.roster(), encoded);
     }

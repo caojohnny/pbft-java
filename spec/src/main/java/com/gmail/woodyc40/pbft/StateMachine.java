@@ -9,9 +9,9 @@ public interface StateMachine<Op, R, T> extends Node<Op, R, T> {
 
     State state();
 
-    void primaryRecvReq(Request<Op> request);
+    void primaryRecvReq(Request<Op, R, T> request);
 
-    void sendPrePrepare(Request<Op> request);
+    void sendPrePrepare(Request<Op, R, T> request);
 
     void recvPrePrepare(PrePrepare prePrepare);
 
