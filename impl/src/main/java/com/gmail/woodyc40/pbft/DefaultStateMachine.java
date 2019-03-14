@@ -17,7 +17,7 @@ public class DefaultStateMachine<Op, R, T>
     private final AtomicInteger seqCounter = new AtomicInteger();
 
     protected DefaultStateMachine(int id,
-                                  Verifier<Op> verifier,
+                                  Verifier<Op, R, T> verifier,
                                   NodeOptions<Op, R, T> options) {
         super(id, verifier, options);
     }

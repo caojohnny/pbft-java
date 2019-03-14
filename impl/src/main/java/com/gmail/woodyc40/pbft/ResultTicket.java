@@ -8,20 +8,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ResultTicket<Op, R> {
-    private final Request<Op> request;
+public class ResultTicket<Op, R, T> {
+    private final Request<Op, R, T> request;
     private final int reqConsensusCount;
 
     private final List<Reply<R>> replies = new ArrayList<>();
     private boolean ready;
     private R result;
 
-    public ResultTicket(Request<Op> request, int tolerance) {
+    public ResultTicket(Request<Op, R, T> request, int tolerance) {
         this.request = request;
         this.reqConsensusCount = tolerance + 1;
     }
 
-    public Request<Op> request() {
+    public Request<Op, R, T> request() {
         return this.request;
     }
 

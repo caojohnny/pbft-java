@@ -4,14 +4,14 @@ public class NodeOptions<Op, R, T> {
     private final int tolerance;
     private final long timeout;
     private final Roster roster;
-    private final Digester<Op> digester;
+    private final Digester<Op, R, T> digester;
     private final Encoder<Op, R, T> encoder;
     private final Transport<T> transport;
 
     public NodeOptions(int tolerance,
                        long tmeout,
                        Roster roster,
-                       Digester<Op> digester,
+                       Digester<Op, R, T> digester,
                        Encoder<Op, R, T> encoder,
                        Transport<T> transport) {
         this.tolerance = tolerance;
@@ -34,7 +34,7 @@ public class NodeOptions<Op, R, T> {
         return this.roster;
     }
 
-    public Digester<Op> digester() {
+    public Digester<Op, R, T> digester() {
         return this.digester;
     }
 

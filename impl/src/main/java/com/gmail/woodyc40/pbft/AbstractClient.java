@@ -1,9 +1,9 @@
 package com.gmail.woodyc40.pbft;
 
-public abstract class AbstractClient<Op, T, R> implements Client<Op, T, R> {
-    private final NodeOptions<Op, T, R> options;
+public abstract class AbstractClient<Op, R, T> implements Client<Op, R, T> {
+    private final NodeOptions<Op, R, T> options;
 
-    protected AbstractClient(NodeOptions<Op, T, R> options) {
+    protected AbstractClient(NodeOptions<Op, R, T> options) {
         this.options = options;
     }
 
@@ -23,17 +23,17 @@ public abstract class AbstractClient<Op, T, R> implements Client<Op, T, R> {
     }
 
     @Override
-    public Digester<Op> digester() {
+    public Digester<Op, R, T> digester() {
         return this.options.digester();
     }
 
     @Override
-    public Encoder<Op, T, R> encoder() {
+    public Encoder<Op, R, T> encoder() {
         return this.options.encoder();
     }
 
     @Override
-    public Transport<R> transport() {
+    public Transport<T> transport() {
         return this.options.transport();
     }
 }

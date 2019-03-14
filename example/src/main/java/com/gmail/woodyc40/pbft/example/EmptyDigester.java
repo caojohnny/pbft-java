@@ -2,18 +2,19 @@ package com.gmail.woodyc40.pbft.example;
 
 import com.gmail.woodyc40.pbft.Digester;
 import com.gmail.woodyc40.pbft.example.type.AdditionOperation;
+import com.gmail.woodyc40.pbft.example.type.AdditionResult;
 import com.gmail.woodyc40.pbft.protocol.Request;
 
-public class EmptyDigester implements Digester<AdditionOperation> {
+public class EmptyDigester implements Digester<AdditionOperation, AdditionResult, byte[]> {
     private static final EmptyDigester INSTANCE = new EmptyDigester();
-    public static Digester<AdditionOperation> instance() {
+    private static final byte[] EMPTY = new byte[0];
+
+    public static Digester<AdditionOperation, AdditionResult, byte[]> instance() {
         return INSTANCE;
     }
 
-    private static final byte[] EMPTY = new byte[0];
-
     @Override
-    public byte[] digest(Request<AdditionOperation> request) {
+    public byte[] digest(Request<AdditionOperation, AdditionResult, byte[]> request) {
         return EMPTY;
     }
 }

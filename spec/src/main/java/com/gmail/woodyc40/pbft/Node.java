@@ -7,7 +7,7 @@ public interface Node<Op, R, T> {
 
     Roster roster();
 
-    Digester<Op> digester();
+    Digester<Op, R, T> digester();
 
     Encoder<Op, R, T> encoder();
 

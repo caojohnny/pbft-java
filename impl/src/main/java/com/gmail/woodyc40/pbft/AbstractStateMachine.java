@@ -3,13 +3,13 @@ package com.gmail.woodyc40.pbft;
 public abstract class AbstractStateMachine<Op, R, T>
         implements StateMachine<Op, R, T> {
     private final int id;
-    private final Verifier<Op> verifier;
+    private final Verifier<Op, R, T> verifier;
     private final NodeOptions<Op, R, T> options;
 
     private State state = State.PRE_PREPARE;
 
     protected AbstractStateMachine(int id,
-                                   Verifier<Op> verifier,
+                                   Verifier<Op, R, T> verifier,
                                    NodeOptions<Op, R, T> options) {
         this.id = id;
         this.verifier = verifier;
@@ -22,7 +22,7 @@ public abstract class AbstractStateMachine<Op, R, T>
     }
 
     @Override
-    public Verifier<Op> verifier() {
+    public Verifier<Op, R, T> verifier() {
         return this.verifier;
     }
 
@@ -51,7 +51,7 @@ public abstract class AbstractStateMachine<Op, R, T>
     }
 
     @Override
-    public Digester<Op> digester() {
+    public Digester<Op, R, T> digester() {
         return this.options.digester();
     }
 

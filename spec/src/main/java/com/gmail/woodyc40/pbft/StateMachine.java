@@ -5,7 +5,7 @@ import com.gmail.woodyc40.pbft.protocol.*;
 public interface StateMachine<Op, R, T> extends Node<Op, R, T> {
     int id();
 
-    Verifier<Op> verifier();
+    Verifier<Op, R, T> verifier();
 
     State state();
 

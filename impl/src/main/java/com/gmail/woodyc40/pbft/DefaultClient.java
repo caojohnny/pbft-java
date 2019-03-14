@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class DefaultClient<Op, R, T> extends AbstractClient<Op, R, T> {
     private final AtomicLong timestampCounter = new AtomicLong();
-    private final Map<Long, ResultTicket<Op, R>> ticketMap =
+    private final Map<Long, ResultTicket<Op, R, T>> ticketMap =
             new ConcurrentHashMap<>();
 
     public DefaultClient(NodeOptions<Op, R, T> options) {
@@ -29,7 +29,7 @@ public class DefaultClient<Op, R, T> extends AbstractClient<Op, R, T> {
     }
 
     public R recv(long id) throws InterruptedException {
-        ResultTicket<Op, R> ticket = this.ticketMap.get(id);
+        ResultTicket<Op, R, T> ticket = this.ticketMap.get(id);
 
         long beginTime = System.currentTimeMillis();
         long remainingTimeout = this.timeout();
@@ -76,7 +76,7 @@ public class DefaultClient<Op, R, T> extends AbstractClient<Op, R, T> {
     public void recvReply(Reply<R> reply) {
         long timestamp = reply.timestamp();
 
-        ResultTicket<Op, R> ticket = this.ticketMap.get(timestamp);
+        ResultTicket<Op, R, T> ticket = this.ticketMap.get(timestamp);
         if (ticket == null) {
             throw new IllegalStateException("Received result before a request was made");
         }

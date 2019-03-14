@@ -6,7 +6,7 @@ public interface Encoder<Op, R, T> {
     default T encode(Message msg) {
         switch (msg.type()) {
             case REQUEST:
-                return this.encodeRequest((Request<Op>) msg);
+                return this.encodeRequest((Request<Op, R, T>) msg);
             case PRE_PREPARE:
                 return this.encodePrePrepare((PrePrepare) msg);
             case PREPARE:
@@ -26,7 +26,7 @@ public interface Encoder<Op, R, T> {
         }
     }
 
-    T encodeRequest(Request<Op> request);
+    T encodeRequest(Request<Op, R, T> request);
 
     T encodePrePrepare(PrePrepare prePrepare);
 
@@ -42,7 +42,7 @@ public interface Encoder<Op, R, T> {
 
     T encodeNewView(NewView newView);
 
-    Request<Op> decodeRequest(T encoded);
+    Request<Op, R, T> decodeRequest(T encoded);
 
     PrePrepare decodePrePrepare(T encoded);
 
