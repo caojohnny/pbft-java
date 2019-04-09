@@ -1,4 +1,4 @@
-package com.gmail.woodyc40.pbft.example.type;
+package com.gmail.woodyc40.pbft.type;
 
 public class AdditionResult {
     private final int result;

@@ -9,12 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>pbft-java-impl</artifactId>
+    <artifactId>pbft-java-replica-impl</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.gmail.woodyc40</groupId>
-            <artifactId>pbft-java-spec</artifactId>
+            <artifactId>pbft-java-replica-spec</artifactId>
             <version>${pbft-version}</version>
             <scope>compile</scope>
         </dependency>

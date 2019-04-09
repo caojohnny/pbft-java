@@ -14,7 +14,14 @@
     <dependencies>
         <dependency>
             <groupId>com.gmail.woodyc40</groupId>
-            <artifactId>pbft-java-impl</artifactId>
+            <artifactId>pbft-java-client-impl</artifactId>
+            <version>${pbft-version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gmail.woodyc40</groupId>
+            <artifactId>pbft-java-client-spec</artifactId>
             <version>${pbft-version}</version>
             <scope>compile</scope>
         </dependency>

@@ -1,4 +1,4 @@
-package com.gmail.woodyc40.pbft.example.type;
+package com.gmail.woodyc40.pbft.type;
 
 public class AdditionOperation {
     private final int first;
