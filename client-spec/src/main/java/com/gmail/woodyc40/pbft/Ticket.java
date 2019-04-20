@@ -1,5 +1,7 @@
 package com.gmail.woodyc40.pbft;
 
+import com.gmail.woodyc40.pbft.message.Request;
+
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -22,12 +24,13 @@ public interface Ticket<O, R> {
     Client<O, R> client();
 
     /**
-     * Obtains the operation that has been requested to be
-     * fulfilled.
+     * Obtains the representation of the dispatched
+     * {@link Request} object as a result of calling
+     * {@link Client#sendRequest(Object)}.
      *
-     * @return the original operation
+     * @return the request
      */
-    O operation();
+    Request<O> request();
 
     /**
      * The result of the operation, queued as a
