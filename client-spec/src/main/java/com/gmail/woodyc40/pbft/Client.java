@@ -2,8 +2,7 @@ package com.gmail.woodyc40.pbft;
 
 import com.gmail.woodyc40.pbft.message.Reply;
 import com.gmail.woodyc40.pbft.message.Request;
-
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * An abstract representation of a <em>client</em> that
