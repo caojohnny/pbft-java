@@ -1,6 +1,6 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.Request;
+import com.gmail.woodyc40.pbft.message.*;
 
 /**
  * Represents a replicated state-machine in the PBFT
@@ -34,6 +34,70 @@ public interface Replica<O, R> {
     void recvRequest(Request<O> request);
 
     /**
+     * Used by the primary replica to send a PBFT
+     * {@code PRE-PREPARE} message to the other replicas.
+     *
+     * @param replicaId the primary replica ID
+     * @param prePrepare the message to send
+     */
+    void sendPrePrepare(int replicaId, PrePrepare<O> prePrepare);
+
+    /**
+     * Called by the replica {@link Transport} to indicate
+     * that a PBFT {@code PRE-PREPARE} message has been
+     * multicasted by the primary to this replica.
+     *
+     * @param prePrepare the message received
+     */
+    void recvPrePrepare(PrePrepare<O> prePrepare);
+
+    /**
+     * Used by each replica to indicate that a PBFT
+     * {@code PREPARE} message has been received.
+     *
+     * @param prepare the message to send
+     */
+    void sendPrepare(Prepare prepare);
+
+    /**
+     * Called by the replica {@link Transport} to indicate
+     * that a PBFT {@code PREPARE} message has been
+     * received from another replica.
+     *
+     * @param prepare the message received
+     */
+    void recvPrepare(Prepare prepare);
+
+    /**
+     * Used by each replica to indicate that the prepared
+     * phase has been reached and to notify other replicas
+     * with the PBFT {@code COMMIT} message.
+     *
+     * @param commit the message to send
+     */
+    void sendCommit(Commit commit);
+
+    /**
+     * Called by the replica {@link Transport} to indicate
+     * that the source replica has entered the prepared
+     * phase and that a PBFT {@code COMMIT} message was
+     * received by this replica as a result.
+     *
+     * @param commit the message received
+     */
+    void recvCommit(Commit commit);
+
+    /**
+     * Used by each replica to send a PBFT {@code REPLY}
+     * message back to the client in order to notify it
+     * of the requested operation result.
+     *
+     * @param clientId the target client ID String
+     * @param reply the message to send
+     */
+    void sendReply(String clientId, Reply<R> reply);
+
+    /**
      * Performs the computation signified by the object
      * which represents the operation to perform on this
      * replica.
@@ -42,6 +106,16 @@ public interface Replica<O, R> {
      * @return the result of the operation
      */
     R compute(O operation);
+
+    /**
+     * Obtains the codec component used to encode and
+     * decode messages for use with the {@link Transport}
+     * layer.
+     *
+     * @param <T> the common transmissible type
+     * @return the codec used by this replica
+     */
+    <T> Codec<T> codec();
 
     /**
      * The type of transport used for communication between

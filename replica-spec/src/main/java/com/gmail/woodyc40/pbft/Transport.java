@@ -2,6 +2,8 @@ package com.gmail.woodyc40.pbft;
 
 import com.gmail.woodyc40.pbft.message.Request;
 
+import java.util.stream.IntStream;
+
 /**
  * The transport used to control messaging between replicas
  * as well as clients.
@@ -16,6 +18,14 @@ public interface Transport<T> {
      * @return the current view number
      */
     int viewNumber();
+
+    /**
+     * Obtains an {@link IntStream} populated with the
+     * known replica ID numbers.
+     *
+     * @return a stream of known replica IDs
+     */
+    IntStream knownReplicaIds();
 
     /**
      * Called by the underlying layer upon receiving an
@@ -44,6 +54,16 @@ public interface Transport<T> {
     void multicastPrePrepare(T prePrepare);
 
     /**
+     * Called by the transmission layer to notify the
+     * {@link Replica} that a pre-prepare message has
+     * arrived from the primary.
+     *
+     * @param prePrepare the encoded pre-prepare
+     *                   message
+     */
+    void recvPrePrepare(T prePrepare);
+
+    /**
      * Multicasts a PBFT {@code PREPARE} message in
      * response to a pre-prepare message.
      *
@@ -52,10 +72,37 @@ public interface Transport<T> {
     void multicastPrepare(T prepare);
 
     /**
+     * Called by the transmission layer to notify the
+     * {@link Replica} that a prepare message has arrived
+     * from another replica.
+     *
+     * @param prepare the encoded prepare message
+     */
+    void recvPrepare(T prepare);
+
+    /**
      * Multicasts a PBFT {@code COMMIT} message in response
      * to a prepare message.
      *
      * @param commit the encoded commit message
      */
     void multicastCommit(T commit);
+
+    /**
+     * Called by the transmission layer to notify the
+     * {@link Replica} that a commit message has arrived
+     * from another replica.
+     *
+     * @param commit the encoded commit message
+     */
+    void recvCommit(T commit);
+
+    /**
+     * Sends a reply message to the client with the given
+     * client ID String.
+     *
+     * @param clientId the client ID String
+     * @param reply the encoded reply message
+     */
+    void sendReply(String clientId, T reply);
 }
