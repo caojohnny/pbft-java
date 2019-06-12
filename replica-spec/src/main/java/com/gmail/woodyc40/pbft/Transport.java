@@ -20,6 +20,14 @@ public interface Transport<T> {
     int viewNumber();
 
     /**
+     * Obtains the number of replicas known by the
+     * transport layer.
+     *
+     * @return the known number of replicas
+     */
+    int countKnownReplicas();
+
+    /**
      * Obtains an {@link IntStream} populated with the
      * known replica ID numbers.
      *
