@@ -1,8 +1,12 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.*;
+import com.gmail.woodyc40.pbft.message.Commit;
+import com.gmail.woodyc40.pbft.message.PrePrepare;
+import com.gmail.woodyc40.pbft.message.PrePrepareImpl;
+import com.gmail.woodyc40.pbft.message.Prepare;
+import com.gmail.woodyc40.pbft.message.Reply;
+import com.gmail.woodyc40.pbft.message.Request;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
@@ -38,8 +42,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
         // We are not the primary replica, redirect
         if (this.replicaId != primaryId) {
-            T encodedRequest = this.codec.encodeRequest(request);
-            this.transport.redirectRequest(primaryId, encodedRequest);
+            this.sendRequest(primaryId, request);
             return;
         }
 
@@ -50,13 +53,19 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
                 this.seqCounter.getAndIncrement(),
                 EMPTY_DIGEST,
                 request);
-        T encodedPrePrepare = this.codec.encodePrePrepare(message);
+        this.sendPrePrepare(message);
+    }
+
+    @Override
+    public void sendRequest(int replicaId, Request<O> request) {
+        T encodedPrePrepare = this.codec.encodeRequest(request);
         this.transport.multicastPrePrepare(encodedPrePrepare);
     }
 
     @Override
-    public void sendPrePrepare(int replicaId, PrePrepare<O> prePrepare) {
-
+    public void sendPrePrepare(PrePrepare<O> prePrepare) {
+        T encodedPrePrepare = this.codec.encodePrePrepare(prePrepare);
+        this.transport.multicastPrePrepare(encodedPrePrepare);
     }
 
     @Override
@@ -66,7 +75,8 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
     @Override
     public void sendPrepare(Prepare prepare) {
-
+        T encodedPrepare = this.codec.encodePrepare(prepare);
+        this.transport.multicastPrePrepare(encodedPrepare);
     }
 
     @Override
@@ -76,7 +86,8 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
     @Override
     public void sendCommit(Commit commit) {
-
+        T encodedCommit = this.codec.encodeCommit(commit);
+        this.transport.multicastPrePrepare(encodedCommit);
     }
 
     @Override
@@ -86,7 +97,8 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
     @Override
     public void sendReply(String clientId, Reply<R> reply) {
-
+        T encodedReply = this.codec.encodeReply(reply);
+        this.transport.sendReply(clientId, encodedReply);
     }
 
     @Override

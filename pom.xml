@@ -19,7 +19,6 @@
         <module>client-impl</module>
         <module>replica-spec</module>
         <module>replica-impl</module>
-        <module>common-spec</module>
     </modules>
 
     <build>

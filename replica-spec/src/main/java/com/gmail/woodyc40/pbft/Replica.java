@@ -34,13 +34,22 @@ public interface Replica<O, R> {
     void recvRequest(Request<O> request);
 
     /**
+     * Used by a non-primary to redirect a PBFT
+     * {@code REQUEST} to the actual primary in the case
+     * that the client mistakenly sends.
+     *
+     * @param replicaId the primary replica ID
+     * @param request the request to redirect
+     */
+    void sendRequest(int replicaId, Request<O> request);
+
+    /**
      * Used by the primary replica to send a PBFT
      * {@code PRE-PREPARE} message to the other replicas.
      *
-     * @param replicaId the primary replica ID
      * @param prePrepare the message to send
      */
-    void sendPrePrepare(int replicaId, PrePrepare<O> prePrepare);
+    void sendPrePrepare(PrePrepare<O> prePrepare);
 
     /**
      * Called by the replica {@link Transport} to indicate

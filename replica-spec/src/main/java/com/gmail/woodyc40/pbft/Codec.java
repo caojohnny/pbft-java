@@ -69,7 +69,7 @@ public interface Codec<T> {
      * @param prepare the prepare message
      * @return the encoded prepare message
      */
-    T encodedPrepare(Prepare prepare);
+    T encodePrepare(Prepare prepare);
 
     /**
      * Decodes a commit message sent to indicate that other
