@@ -6,8 +6,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 // POLICY: Signatures ignored
 // POLICY: Digests ignored
-
-// TODO: Need to check the state for recv ops
 public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
     private static final byte[] EMPTY_DIGEST = new byte[0];
 
@@ -45,7 +43,10 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
             return;
         }
 
-        // TODO: Check with the MessageLog, make sure there aren't >X concurrent requests
+        if (this.log.shouldBuffer()) {
+            this.log.buffer(request);
+            return;
+        }
 
         PrePrepare<O> message = new PrePrepareImpl<>(
                 this.transport.viewNumber(),
@@ -69,24 +70,29 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
     @Override
     public void recvPrePrepare(PrePrepare<O> prePrepare) {
-        // TODO: Confirm that same seq/view has not been accepted in log
-        // TODO: Water marks in log
-
         int viewNumber = prePrepare.viewNumber();
+        long seqNumber = prePrepare.seqNumber();
+        if (this.log.exists(viewNumber, seqNumber)) {
+            return;
+        }
+
+        if (!this.log.isBetweenWaterMarks(seqNumber)) {
+            return;
+        }
+
         int currentViewNumber = this.transport.viewNumber();
         if (currentViewNumber != viewNumber) {
             return;
         }
 
-
         this.log.add(prePrepare);
 
-        Prepare prepare = new PrepareImpl(currentViewNumber,
-                prePrepare.seqNumber(),
+        Prepare prepare = new PrepareImpl(
+                currentViewNumber,
+                seqNumber,
                 prePrepare.digest(),
                 this.replicaId);
         this.log.add(prepare);
-
         this.sendPrepare(prepare);
     }
 
@@ -98,9 +104,27 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
     @Override
     public void recvPrepare(Prepare prepare) {
+        int currentViewNumber = this.transport.viewNumber();
+        int viewNumber = prepare.viewNumber();
+        if (currentViewNumber != viewNumber) {
+            return;
+        }
+
+        long seqNumber = prepare.seqNumber();
+        if (!this.log.isBetweenWaterMarks(seqNumber)) {
+            return;
+        }
+
         this.log.add(prepare);
 
-        // TODO: Check prepared(...)
+        if (this.log.isPrepared(prepare)) {
+            Commit commit = new CommitImpl(
+                    viewNumber,
+                    seqNumber,
+                    EMPTY_DIGEST,
+                    this.replicaId);
+            this.sendCommit(commit);
+        }
     }
 
     @Override
@@ -111,7 +135,37 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
     @Override
     public void recvCommit(Commit commit) {
+        int currentViewNumber = this.transport.viewNumber();
+        int viewNumber = commit.viewNumber();
+        if (currentViewNumber != viewNumber) {
+            return;
+        }
 
+        long seqNumber = commit.seqNumber();
+        if (!this.log.isBetweenWaterMarks(seqNumber)) {
+            return;
+        }
+
+        this.log.add(commit);
+
+        if (this.log.isCommittedLocal(commit)) {
+            Ticket<O> ticket = this.log.getTicket(seqNumber);
+            if (ticket == null) {
+                throw new IllegalStateException();
+            }
+
+            Request<O> request = ticket.request();
+            R result = this.compute(request.operation());
+
+            String clientId = request.clientId();
+            Reply<R> reply = new ReplyImpl<>(
+                    viewNumber,
+                    request.timestamp(),
+                    clientId,
+                    this.replicaId,
+                    result);
+            this.sendReply(clientId, reply);
+        }
     }
 
     @Override
