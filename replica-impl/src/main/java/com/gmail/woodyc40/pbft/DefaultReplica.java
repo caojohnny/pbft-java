@@ -2,13 +2,10 @@ package com.gmail.woodyc40.pbft;
 
 import com.gmail.woodyc40.pbft.message.*;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
-// POLICY: Signatures ignored
-// POLICY: Digests ignored
 public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
-    private static final byte[] EMPTY_DIGEST = new byte[0];
-
     private final int replicaId;
     private final MessageLog log;
     private final Codec<T> codec;
@@ -51,7 +48,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
         PrePrepare<O> message = new PrePrepareImpl<>(
                 this.transport.viewNumber(),
                 this.seqCounter.getAndIncrement(),
-                EMPTY_DIGEST,
+                this.codec.digest(request),
                 request);
         this.sendPrePrepare(message);
     }
@@ -68,20 +65,48 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
         this.transport.multicastPrePrepare(encodedPrePrepare);
     }
 
-    @Override
-    public void recvPrePrepare(PrePrepare<O> prePrepare) {
-        int viewNumber = prePrepare.viewNumber();
-        long seqNumber = prePrepare.seqNumber();
-        if (this.log.exists(viewNumber, seqNumber)) {
-            return;
+    private boolean verifyPhaseMessage(PhaseMessage message) {
+        int currentViewNumber = this.transport.viewNumber();
+        int viewNumber = message.viewNumber();
+        if (currentViewNumber != viewNumber) {
+            return false;
         }
 
+        long seqNumber = message.seqNumber();
         if (!this.log.isBetweenWaterMarks(seqNumber)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void recvPrePrepare(PrePrepare<O> prePrepare) {
+        if (!this.verifyPhaseMessage(prePrepare)) {
             return;
         }
 
         int currentViewNumber = this.transport.viewNumber();
-        if (currentViewNumber != viewNumber) {
+        long seqNumber = prePrepare.seqNumber();
+
+        Ticket<O> ticket = this.log.getTicket(seqNumber);
+        byte[] digest = prePrepare.digest();
+        if (ticket != null && ticket.viewNumber() == currentViewNumber) {
+            for (Object message : ticket.messages()) {
+                if (!(message instanceof PrePrepare)) {
+                    continue;
+                }
+
+                PrePrepare<O> prevPrePrepare = (PrePrepare<O>) message;
+                byte[] prevDigest = prevPrePrepare.digest();
+                if (!Arrays.equals(prevDigest, digest)) {
+                    return;
+                }
+            }
+        }
+
+        byte[] computedDigest = this.codec.digest(prePrepare.request());
+        if (!Arrays.equals(digest, computedDigest)) {
             return;
         }
 
@@ -90,38 +115,34 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
         Prepare prepare = new PrepareImpl(
                 currentViewNumber,
                 seqNumber,
-                prePrepare.digest(),
+                digest,
                 this.replicaId);
-        this.log.add(prepare);
         this.sendPrepare(prepare);
     }
 
     @Override
     public void sendPrepare(Prepare prepare) {
+        this.log.add(prepare);
+
         T encodedPrepare = this.codec.encodePrepare(prepare);
         this.transport.multicastPrePrepare(encodedPrepare);
     }
 
     @Override
     public void recvPrepare(Prepare prepare) {
-        int currentViewNumber = this.transport.viewNumber();
-        int viewNumber = prepare.viewNumber();
-        if (currentViewNumber != viewNumber) {
-            return;
-        }
-
-        long seqNumber = prepare.seqNumber();
-        if (!this.log.isBetweenWaterMarks(seqNumber)) {
+        if (!this.verifyPhaseMessage(prepare)) {
             return;
         }
 
         this.log.add(prepare);
 
+        int currentViewNumber = this.transport.viewNumber();
+        long seqNumber = prepare.seqNumber();
         if (this.log.isPrepared(prepare)) {
             Commit commit = new CommitImpl(
-                    viewNumber,
+                    currentViewNumber,
                     seqNumber,
-                    EMPTY_DIGEST,
+                    prepare.digest(),
                     this.replicaId);
             this.sendCommit(commit);
         }
@@ -135,18 +156,14 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
     @Override
     public void recvCommit(Commit commit) {
-        int currentViewNumber = this.transport.viewNumber();
-        int viewNumber = commit.viewNumber();
-        if (currentViewNumber != viewNumber) {
-            return;
-        }
-
-        long seqNumber = commit.seqNumber();
-        if (!this.log.isBetweenWaterMarks(seqNumber)) {
+        if (!this.verifyPhaseMessage(commit)) {
             return;
         }
 
         this.log.add(commit);
+
+        int currentViewNumber = this.transport.viewNumber();
+        long seqNumber = commit.seqNumber();
 
         if (this.log.isCommittedLocal(commit)) {
             Ticket<O> ticket = this.log.getTicket(seqNumber);
@@ -159,7 +176,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
             String clientId = request.clientId();
             Reply<R> reply = new ReplyImpl<>(
-                    viewNumber,
+                    currentViewNumber,
                     request.timestamp(),
                     clientId,
                     this.replicaId,

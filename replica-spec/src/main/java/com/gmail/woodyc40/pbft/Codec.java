@@ -15,6 +15,15 @@ import com.gmail.woodyc40.pbft.message.*;
  */
 public interface Codec<T> {
     /**
+     * Produces a digest of the given request message.
+     *
+     * @param request the request to digest
+     * @param <O> the request operation type
+     * @return the digest as a byte array
+     */
+    <O> byte[] digest(Request<O> request);
+
+    /**
      * Decodes a request, usually either from a client or
      * from a replica redirect.
      *

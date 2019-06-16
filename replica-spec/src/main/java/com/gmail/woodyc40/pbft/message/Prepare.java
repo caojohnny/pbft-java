@@ -8,33 +8,7 @@ import com.gmail.woodyc40.pbft.Transport;
  * response to a {@link PrePrepare} message being
  * received.
  */
-public interface Prepare {
-    /**
-     * Obtains the view number read from the replica
-     * multicasting this message obtained from
-     * {@link Transport#viewNumber()}.
-     *
-     * @return the view number
-     */
-    int viewNumber();
-
-    /**
-     * Obtains the sequence number assigned by the primary
-     * to the {@link PrePrepare} message that prompted this
-     * message.
-     *
-     * @return the sequence number
-     */
-    long seqNumber();
-
-    /**
-     * The digest for the {@link Request} which prompted
-     * the preceding {@link PrePrepare} message.
-     *
-     * @return the message digest
-     */
-    byte[] digest();
-
+public interface Prepare extends PhaseMessage {
     /**
      * The ID number for the replica that multicasts this
      * message, obtainable through

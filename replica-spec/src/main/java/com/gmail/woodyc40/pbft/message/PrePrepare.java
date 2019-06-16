@@ -7,31 +7,7 @@ import com.gmail.woodyc40.pbft.Transport;
  *
  * @param <O> the request operation type
  */
-public interface PrePrepare<O> {
-    /**
-     * The current view number when this message is
-     * multicasted by the primary, obtainable through
-     * {@link Transport#viewNumber()}.
-     *
-     * @return the view number
-     */
-    int viewNumber();
-
-    /**
-     * Represents sequence number assigned by the replica
-     * at the time this message is multicasted.
-     *
-     * @return the sequence number
-     */
-    long seqNumber();
-
-    /**
-     * Obtains the {@link Request} message digest.
-     *
-     * @return the message digest
-     */
-    byte[] digest();
-
+public interface PrePrepare<O> extends PhaseMessage {
     /**
      * The request message that prompted the primary to
      * multicast this PrePrepare message.

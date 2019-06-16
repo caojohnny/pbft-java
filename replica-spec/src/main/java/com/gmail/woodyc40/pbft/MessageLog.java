@@ -14,8 +14,6 @@ public interface MessageLog {
 
     boolean isBetweenWaterMarks(long seqNumber);
 
-    boolean exists(int viewNumber, long seqNumber);
-
     boolean isPrepared(Prepare msg);
 
     boolean isCommittedLocal(Commit commit);
