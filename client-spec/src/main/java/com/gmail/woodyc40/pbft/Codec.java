@@ -8,8 +8,8 @@ import com.gmail.woodyc40.pbft.message.Request;
  * into a format transmissible through a {@link Transport}.
  *
  * <p>A {@link Codec} should be capable of handling message
- * cryptography, e.g. digesting, signing, and generating
- * MACs as it sees fit.</p>
+ * cryptography, i.e. signing, and generating MACs as it
+ * sees fit.</p>
  *
  * @param <T> the type of transmissible format that
  *            represents different messages

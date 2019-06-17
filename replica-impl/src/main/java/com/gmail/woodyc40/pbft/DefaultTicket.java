@@ -11,11 +11,25 @@ import java.util.Collection;
 import java.util.List;
 
 public class DefaultTicket<O> implements Ticket<O> {
+    private final int viewNumber;
+    private final long seqNumber;
     private final Request<O> request;
     private final List<Object> messages = new ArrayList<>();
 
-    public DefaultTicket(Request<O> request) {
+    public DefaultTicket(int viewNumber, long seqNumber, Request<O> request) {
+        this.viewNumber = viewNumber;
+        this.seqNumber = seqNumber;
         this.request = request;
+    }
+
+    @Override
+    public int viewNumber() {
+        return this.viewNumber;
+    }
+
+    @Override
+    public long seqNumber() {
+        return this.seqNumber;
     }
 
     @Override

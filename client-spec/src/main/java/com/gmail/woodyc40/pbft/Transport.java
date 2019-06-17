@@ -36,20 +36,16 @@ public interface Transport<T> {
      *
      * @param replicaId the ID number of the replica
      * @param request   the encoded request message
-     * @throws Exception if an error occurs sending the
-     *                   message
      */
-    void sendRequest(int replicaId, T request) throws Exception;
+    void sendRequest(int replicaId, T request);
 
     /**
      * Sends the given encoded {@link Request} to all known
      * replicas.
      *
      * @param request the encoded request message
-     * @throws Exception if an error occurs sending the
-     *                   message
      */
-    void multicastRequest(T request) throws Exception;
+    void multicastRequest(T request);
 
     /**
      * Called by a user-implemented message listener which
@@ -57,8 +53,6 @@ public interface Transport<T> {
      * reply from a replica.
      *
      * @param reply the encoded reply message
-     * @throws Exception if an error occurs processing the
-     *                   message and decoding it once it has been received
      */
-    void recvReply(T reply) throws Exception;
+    void recvReply(T reply);
 }

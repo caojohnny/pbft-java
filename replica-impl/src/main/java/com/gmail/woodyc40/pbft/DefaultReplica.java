@@ -3,7 +3,6 @@ package com.gmail.woodyc40.pbft;
 import com.gmail.woodyc40.pbft.message.*;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
     private final int replicaId;
@@ -13,7 +12,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
     private final Digester<O> digester;
     private final Transport<T> transport;
 
-    private final AtomicLong seqCounter = new AtomicLong();
+    private long seqCounter;
 
     public DefaultReplica(int replicaId,
                           int tolerance,
@@ -61,7 +60,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
         }
 
         int currentViewNumber = this.transport.viewNumber();
-        long seqNumber = this.seqCounter.getAndIncrement();
+        long seqNumber = this.seqCounter++;
 
         Ticket<O> ticket = this.log.newTicket(currentViewNumber, seqNumber, request);
         ticket.append(request);
@@ -216,6 +215,8 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
                     clientId,
                     this.replicaId,
                     result);
+
+            this.log.deleteTicket(currentViewNumber, seqNumber);
             this.sendReply(clientId, reply);
         }
     }

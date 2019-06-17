@@ -12,6 +12,22 @@ import java.util.Collection;
  */
 public interface Ticket<O> {
     /**
+     * Obtains the view number in which this ticket was
+     * created.
+     *
+     * @return the view number
+     */
+    int viewNumber();
+
+    /**
+     * Obtains the sequence number assigned to the pending
+     * request.
+     *
+     * @return the sequence number
+     */
+    long seqNumber();
+
+    /**
      * Appends the given message to the log associated
      * with the pending operation represented by this
      * ticket.

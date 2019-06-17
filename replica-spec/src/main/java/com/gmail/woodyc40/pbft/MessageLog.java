@@ -37,6 +37,17 @@ public interface MessageLog {
     <O> Ticket<O> newTicket(int viewNumber, long seqNumber, Request<O> request);
 
     /**
+     * Removes the ticket for the pending request with the
+     * given view and sequence numbers.
+     *
+     * @param viewNumber the view number
+     * @param seqNumber the sequence number
+     * @return {@code ture} if a request was successfully
+     * removed
+     */
+    boolean deleteTicket(int viewNumber, long seqNumber);
+
+    /**
      * Determines whether or not to buffer the next request
      * message.
      *
