@@ -127,6 +127,15 @@ public interface Replica<O, R> {
     <T> Codec<T> codec();
 
     /**
+     * Obtains the digester component used to verify
+     * request integrity.
+     *
+     * @param <T> the operation type to be digested
+     * @return the digester component
+     */
+    <T> Digester<T> digester();
+
+    /**
      * The type of transport used for communication between
      * replicas as well as clients.
      *

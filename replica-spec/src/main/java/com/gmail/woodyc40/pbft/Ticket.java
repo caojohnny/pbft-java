@@ -3,9 +3,6 @@ package com.gmail.woodyc40.pbft;
 import com.gmail.woodyc40.pbft.message.Request;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Represents a pending request operation that is awaiting
@@ -15,20 +12,30 @@ import java.util.stream.Stream;
  */
 public interface Ticket<O> {
     /**
-     * Obtains the view number of the replica system at the
-     * time that the ticket was initialized.
+     * Appends the given message to the log associated
+     * with the pending operation represented by this
+     * ticket.
      *
-     * @return the view number
+     * @param message the message to append
      */
-    int viewNumber();
+    void append(Object message);
 
     /**
-     * Obtains the sequence number assigned to this
-     * particular request.
+     * Checks the state of the ticket to determine whether
+     * the condition {@code prepared} is {@code true}.
      *
-     * @return the sequence number
+     * @return the {@code prepared} state of the operation
      */
-    long seqNumber();
+    boolean isPrepared();
+
+    /**
+     * Checks the state of the ticket to determine whether
+     * the condition {@code committed-local} is
+     * {@code true}.
+     *
+     * @return the {@code committed-local} state
+     */
+    boolean isCommittedLocal();
 
     /**
      * Obtains a collection of the messages pertaining to

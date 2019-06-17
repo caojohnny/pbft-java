@@ -8,21 +8,12 @@ import com.gmail.woodyc40.pbft.message.*;
  * {@link Transport}.
  *
  * <p>A {@link Codec} should be capable of handling message
- * cryptography, e.g. digesting, signing, and generating
+ * cryptography, i.e. signing, and generating
  * MACs as it sees fit.</p>
  *
  * @param <T> the transmissible type
  */
 public interface Codec<T> {
-    /**
-     * Produces a digest of the given request message.
-     *
-     * @param request the request to digest
-     * @param <O> the request operation type
-     * @return the digest as a byte array
-     */
-    <O> byte[] digest(Request<O> request);
-
     /**
      * Decodes a request, usually either from a client or
      * from a replica redirect.

@@ -9,14 +9,20 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
     private final int replicaId;
     private final MessageLog log;
     private final Codec<T> codec;
+    private final Digester<O> digester;
     private final Transport<T> transport;
 
     private final AtomicLong seqCounter = new AtomicLong();
 
-    public DefaultReplica(int replicaId, MessageLog log, Codec<T> codec, Transport<T> transport) {
+    public DefaultReplica(int replicaId,
+                          MessageLog log,
+                          Codec<T> codec,
+                          Digester<O> digester,
+                          Transport<T> transport) {
         this.replicaId = replicaId;
         this.log = log;
         this.codec = codec;
+        this.digester = digester;
         this.transport = transport;
     }
 
@@ -30,8 +36,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
         return this.log;
     }
 
-    @Override
-    public void recvRequest(Request<O> request) {
+    private void recvRequest(Request<O> request, boolean buffered) {
         int primaryId = this.getPrimaryId();
 
         // We are not the primary replica, redirect
@@ -40,17 +45,30 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
             return;
         }
 
-        if (this.log.shouldBuffer()) {
-            this.log.buffer(request);
-            return;
+        if (!buffered) {
+            if (this.log.shouldBuffer()) {
+                this.log.buffer(request);
+                return;
+            }
         }
 
+        int currentViewNumber = this.transport.viewNumber();
+        long seqNumber = this.seqCounter.getAndIncrement();
+
+        Ticket<O> ticket = this.log.newTicket(currentViewNumber, seqNumber);
+        ticket.append(request);
+
         PrePrepare<O> message = new PrePrepareImpl<>(
-                this.transport.viewNumber(),
-                this.seqCounter.getAndIncrement(),
-                this.codec.digest(request),
+                currentViewNumber,
+                seqNumber,
+                this.digester.digest(request),
                 request);
         this.sendPrePrepare(message);
+    }
+
+    @Override
+    public void recvRequest(Request<O> request) {
+        this.recvRequest(request, false);
     }
 
     @Override
@@ -89,9 +107,9 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
         int currentViewNumber = this.transport.viewNumber();
         long seqNumber = prePrepare.seqNumber();
 
-        Ticket<O> ticket = this.log.getTicket(seqNumber);
+        Ticket<O> ticket = this.log.getTicket(currentViewNumber, seqNumber);
         byte[] digest = prePrepare.digest();
-        if (ticket != null && ticket.viewNumber() == currentViewNumber) {
+        if (ticket != null) {
             for (Object message : ticket.messages()) {
                 if (!(message instanceof PrePrepare)) {
                     continue;
@@ -103,14 +121,16 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
                     return;
                 }
             }
+        } else {
+            ticket = this.log.newTicket(currentViewNumber, seqNumber);
         }
 
-        byte[] computedDigest = this.codec.digest(prePrepare.request());
+        byte[] computedDigest = this.digester.digest(prePrepare.request());
         if (!Arrays.equals(digest, computedDigest)) {
             return;
         }
 
-        this.log.add(prePrepare);
+        ticket.append(prePrepare);
 
         Prepare prepare = new PrepareImpl(
                 currentViewNumber,
@@ -118,12 +138,12 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
                 digest,
                 this.replicaId);
         this.sendPrepare(prepare);
+
+        ticket.append(prepare);
     }
 
     @Override
     public void sendPrepare(Prepare prepare) {
-        this.log.add(prepare);
-
         T encodedPrepare = this.codec.encodePrepare(prepare);
         this.transport.multicastPrePrepare(encodedPrepare);
     }
@@ -134,11 +154,16 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
             return;
         }
 
-        this.log.add(prepare);
-
         int currentViewNumber = this.transport.viewNumber();
         long seqNumber = prepare.seqNumber();
-        if (this.log.isPrepared(prepare)) {
+
+        Ticket<O> ticket = this.log.getTicket(currentViewNumber, seqNumber);
+        if (ticket == null) {
+            throw new IllegalStateException("Received PREPARE in the incorrect order");
+        }
+
+        ticket.append(prepare);
+        if (ticket.isPrepared()) {
             Commit commit = new CommitImpl(
                     currentViewNumber,
                     seqNumber,
@@ -160,17 +185,16 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
             return;
         }
 
-        this.log.add(commit);
-
         int currentViewNumber = this.transport.viewNumber();
         long seqNumber = commit.seqNumber();
 
-        if (this.log.isCommittedLocal(commit)) {
-            Ticket<O> ticket = this.log.getTicket(seqNumber);
-            if (ticket == null) {
-                throw new IllegalStateException();
-            }
+        Ticket<O> ticket = this.log.getTicket(currentViewNumber, seqNumber);
+        if (ticket == null) {
+            throw new IllegalStateException("Received COMMIT in the incorrect order");
+        }
 
+        ticket.append(commit);
+        if (ticket.isCommittedLocal()) {
             Request<O> request = ticket.request();
             R result = this.compute(request.operation());
 
@@ -185,15 +209,29 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
         }
     }
 
+    private void handleNextBufferedRequest() {
+        Request<O> bufferedRequest = this.log.popBuffer();
+        if (bufferedRequest != null) {
+            this.recvRequest(bufferedRequest, true);
+        }
+    }
+
     @Override
     public void sendReply(String clientId, Reply<R> reply) {
         T encodedReply = this.codec.encodeReply(reply);
         this.transport.sendReply(clientId, encodedReply);
+
+        this.handleNextBufferedRequest();
     }
 
     @Override
     public Codec<T> codec() {
         return this.codec;
+    }
+
+    @Override
+    public Digester<O> digester() {
+        return this.digester;
     }
 
     @Override
