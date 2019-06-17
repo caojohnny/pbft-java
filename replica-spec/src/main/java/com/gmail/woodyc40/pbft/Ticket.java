@@ -24,18 +24,24 @@ public interface Ticket<O> {
      * Checks the state of the ticket to determine whether
      * the condition {@code prepared} is {@code true}.
      *
+     * @param tolerance the number of failures {@code f}
+     *                  that should be guarded against
+     *                  checking the prepared state
      * @return the {@code prepared} state of the operation
      */
-    boolean isPrepared();
+    boolean isPrepared(int tolerance);
 
     /**
      * Checks the state of the ticket to determine whether
      * the condition {@code committed-local} is
      * {@code true}.
      *
+     * @param tolerance the number of failures {@code f}
+     *                  that should be guarded against
+     *                  checking the prepared state
      * @return the {@code committed-local} state
      */
-    boolean isCommittedLocal();
+    boolean isCommittedLocal(int tolerance);
 
     /**
      * Obtains a collection of the messages pertaining to

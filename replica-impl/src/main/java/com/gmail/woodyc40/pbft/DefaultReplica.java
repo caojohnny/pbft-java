@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
     private final int replicaId;
+    private final int tolerance;
     private final MessageLog log;
     private final Codec<T> codec;
     private final Digester<O> digester;
@@ -15,11 +16,13 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
     private final AtomicLong seqCounter = new AtomicLong();
 
     public DefaultReplica(int replicaId,
+                          int tolerance,
                           MessageLog log,
                           Codec<T> codec,
                           Digester<O> digester,
                           Transport<T> transport) {
         this.replicaId = replicaId;
+        this.tolerance = tolerance;
         this.log = log;
         this.codec = codec;
         this.digester = digester;
@@ -29,6 +32,11 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
     @Override
     public int replicaId() {
         return this.replicaId;
+    }
+
+    @Override
+    public int tolerance() {
+        return this.tolerance;
     }
 
     @Override
@@ -55,10 +63,10 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
         int currentViewNumber = this.transport.viewNumber();
         long seqNumber = this.seqCounter.getAndIncrement();
 
-        Ticket<O> ticket = this.log.newTicket(currentViewNumber, seqNumber);
+        Ticket<O> ticket = this.log.newTicket(currentViewNumber, seqNumber, request);
         ticket.append(request);
 
-        PrePrepare<O> message = new PrePrepareImpl<>(
+        PrePrepare<O> message = new DefaultPrePrepare<>(
                 currentViewNumber,
                 seqNumber,
                 this.digester.digest(request),
@@ -105,10 +113,11 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
         }
 
         int currentViewNumber = this.transport.viewNumber();
+        byte[] digest = prePrepare.digest();
+        Request<O> request = prePrepare.request();
         long seqNumber = prePrepare.seqNumber();
 
         Ticket<O> ticket = this.log.getTicket(currentViewNumber, seqNumber);
-        byte[] digest = prePrepare.digest();
         if (ticket != null) {
             for (Object message : ticket.messages()) {
                 if (!(message instanceof PrePrepare)) {
@@ -122,17 +131,17 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
                 }
             }
         } else {
-            ticket = this.log.newTicket(currentViewNumber, seqNumber);
+            ticket = this.log.newTicket(currentViewNumber, seqNumber, request);
         }
 
-        byte[] computedDigest = this.digester.digest(prePrepare.request());
+        byte[] computedDigest = this.digester.digest(request);
         if (!Arrays.equals(digest, computedDigest)) {
             return;
         }
 
         ticket.append(prePrepare);
 
-        Prepare prepare = new PrepareImpl(
+        Prepare prepare = new DefaultPrepare(
                 currentViewNumber,
                 seqNumber,
                 digest,
@@ -163,13 +172,15 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
         }
 
         ticket.append(prepare);
-        if (ticket.isPrepared()) {
-            Commit commit = new CommitImpl(
+        if (ticket.isPrepared(this.tolerance)) {
+            Commit commit = new DefaultCommit(
                     currentViewNumber,
                     seqNumber,
                     prepare.digest(),
                     this.replicaId);
             this.sendCommit(commit);
+
+            ticket.append(commit);
         }
     }
 
@@ -194,12 +205,12 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
         }
 
         ticket.append(commit);
-        if (ticket.isCommittedLocal()) {
+        if (ticket.isCommittedLocal(this.tolerance)) {
             Request<O> request = ticket.request();
             R result = this.compute(request.operation());
 
             String clientId = request.clientId();
-            Reply<R> reply = new ReplyImpl<>(
+            Reply<R> reply = new DefaultReply<>(
                     currentViewNumber,
                     request.timestamp(),
                     clientId,

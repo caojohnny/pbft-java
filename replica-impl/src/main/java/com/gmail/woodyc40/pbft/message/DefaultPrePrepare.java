@@ -1,16 +1,16 @@
 package com.gmail.woodyc40.pbft.message;
 
-public class CommitImpl implements Commit {
+public class DefaultPrePrepare<O> implements PrePrepare<O> {
     private final int viewNumber;
     private final long seqNumber;
     private final byte[] digest;
-    private final int replicaId;
+    private final Request<O> request;
 
-    public CommitImpl(int viewNumber, long seqNumber, byte[] digest, int replicaId) {
+    public DefaultPrePrepare(int viewNumber, long seqNumber, byte[] digest, Request<O> request) {
         this.viewNumber = viewNumber;
         this.seqNumber = seqNumber;
         this.digest = digest;
-        this.replicaId = replicaId;
+        this.request = request;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class CommitImpl implements Commit {
     }
 
     @Override
-    public int replicaId() {
-        return this.replicaId;
+    public Request<O> request() {
+        return this.request;
     }
 }

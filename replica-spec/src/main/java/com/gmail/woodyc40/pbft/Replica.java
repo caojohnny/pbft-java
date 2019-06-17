@@ -18,6 +18,14 @@ public interface Replica<O, R> {
     int replicaId();
 
     /**
+     * The number of faulty replicas that should be
+     * accounted for by the protocol.
+     *
+     * @return the number of faulty nodes, {@code f}
+     */
+    int tolerance();
+
+    /**
      * Obtains this {@link Replica}'s message log as
      * specified in the PBFT algorithm;
      *
