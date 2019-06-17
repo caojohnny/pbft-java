@@ -1,18 +1,16 @@
 package com.gmail.woodyc40.pbft.message;
 
-import com.gmail.woodyc40.pbft.Client;
-
-public class DefaultReply<R> implements Reply<R> {
+public class DefaultReplicaReply<R> implements ReplicaReply<R> {
     private final int viewNumber;
     private final long timestamp;
-    private final Client<?, ?> client;
+    private final String clientId;
     private final int replicaId;
     private final R result;
 
-    public DefaultReply(int viewNumber, long timestamp, Client<?, ?> client, int replicaId, R result) {
+    public DefaultReplicaReply(int viewNumber, long timestamp, String clientId, int replicaId, R result) {
         this.viewNumber = viewNumber;
         this.timestamp = timestamp;
-        this.client = client;
+        this.clientId = clientId;
         this.replicaId = replicaId;
         this.result = result;
     }
@@ -28,8 +26,8 @@ public class DefaultReply<R> implements Reply<R> {
     }
 
     @Override
-    public <O> Client<O, R> client() {
-        return (Client<O, R>) this.client;
+    public String clientId() {
+        return this.clientId;
     }
 
     @Override

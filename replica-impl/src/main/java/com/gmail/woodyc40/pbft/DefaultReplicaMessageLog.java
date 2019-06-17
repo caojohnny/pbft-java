@@ -1,36 +1,36 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.Request;
+import com.gmail.woodyc40.pbft.message.ReplicaRequest;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.*;
 
-public class DefaultMessageLog implements MessageLog {
+public class DefaultReplicaMessageLog implements ReplicaMessageLog {
     private final int bufferThreshold;
 
-    private final Map<TicketKey, Ticket<?>> tickets = new HashMap<>();
-    private final Deque<Request<?>> buffer = new LinkedList<>();
+    private final Map<TicketKey, ReplicaTicket<?>> tickets = new HashMap<>();
+    private final Deque<ReplicaRequest<?>> buffer = new LinkedList<>();
 
     // TODO: replicas remember the last reply message they sent to each client
     // TODO: Set the water marks
     private long lowWaterMark;
     private long highWaterMark;
 
-    public DefaultMessageLog(int bufferThreshold, int highWaterMark) {
+    public DefaultReplicaMessageLog(int bufferThreshold, int highWaterMark) {
         this.bufferThreshold = bufferThreshold;
         this.highWaterMark = highWaterMark;
     }
 
     @Override
-    public @Nullable <O> Ticket<O> getTicket(int viewNumber, long seqNumber) {
+    public @Nullable <O> ReplicaTicket<O> getTicket(int viewNumber, long seqNumber) {
         TicketKey key = new TicketKey(viewNumber, seqNumber);
-        return (Ticket<O>) this.tickets.get(key);
+        return (ReplicaTicket<O>) this.tickets.get(key);
     }
 
     @Override
-    public @NonNull <O> Ticket<O> newTicket(int viewNumber, long seqNumber, Request<O> request) {
-        Ticket<O> ticket = new DefaultTicket<>(viewNumber, seqNumber, request);
+    public @NonNull <O> ReplicaTicket<O> newTicket(int viewNumber, long seqNumber, ReplicaRequest<O> request) {
+        ReplicaTicket<O> ticket = new DefaultReplicaTicket<>(viewNumber, seqNumber, request);
 
         TicketKey key = new TicketKey(viewNumber, seqNumber);
         this.tickets.put(key, ticket);
@@ -50,13 +50,13 @@ public class DefaultMessageLog implements MessageLog {
     }
 
     @Override
-    public <O> void buffer(Request<O> request) {
+    public <O> void buffer(ReplicaRequest<O> request) {
         this.buffer.addLast(request);
     }
 
     @Override
-    public @Nullable <O> Request<O> popBuffer() {
-        return (Request<O>) this.buffer.pollFirst();
+    public @Nullable <O> ReplicaRequest<O> popBuffer() {
+        return (ReplicaRequest<O>) this.buffer.pollFirst();
     }
 
     @Override

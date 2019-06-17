@@ -1,6 +1,6 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.Request;
+import com.gmail.woodyc40.pbft.message.ReplicaRequest;
 
 import java.util.stream.IntStream;
 
@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
  *
  * @param <T> the encoded message type
  */
-public interface Transport<T> {
+public interface ReplicaTransport<T> {
     /**
      * Obtains the current view number, used to determine
      * the primary ID number.
@@ -37,7 +37,7 @@ public interface Transport<T> {
 
     /**
      * Called by the underlying layer upon receiving an
-     * inbound {@link Request} message.
+     * inbound {@link ReplicaRequest} message.
      *
      * @param request the encoded request
      */

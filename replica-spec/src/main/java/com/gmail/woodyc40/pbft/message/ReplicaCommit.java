@@ -6,7 +6,7 @@ import com.gmail.woodyc40.pbft.Replica;
  * Represents a PBFT {@code COMMIT} message sent to confirm
  * the prepared state of the replica.
  */
-public interface Commit extends PhaseMessage {
+public interface ReplicaCommit extends ReplicaPhaseMessage {
     /**
      * The replica ID number for the replica multicasting
      * this message obtained through

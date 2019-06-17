@@ -1,14 +1,14 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.Request;
+import com.gmail.woodyc40.pbft.message.ReplicaRequest;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Represents an abstract message log using {@link Ticket}s
+ * Represents an abstract message log using {@link ReplicaTicket}s
  * to organize pending operations from client requests.
  */
-public interface MessageLog {
+public interface ReplicaMessageLog {
     /**
      * Obtains a pending request in the given view with the
      * given sequence number.
@@ -20,7 +20,7 @@ public interface MessageLog {
      *         exists
      */
     @Nullable
-    <O> Ticket<O> getTicket(int viewNumber, long seqNumber);
+    <O> ReplicaTicket<O> getTicket(int viewNumber, long seqNumber);
 
     /**
      * Creates a new ticket in the given view number with
@@ -34,7 +34,7 @@ public interface MessageLog {
      * @return the new ticket
      */
     @NonNull
-    <O> Ticket<O> newTicket(int viewNumber, long seqNumber, Request<O> request);
+    <O> ReplicaTicket<O> newTicket(int viewNumber, long seqNumber, ReplicaRequest<O> request);
 
     /**
      * Removes the ticket for the pending request with the
@@ -63,7 +63,7 @@ public interface MessageLog {
      * @param request the request to buffer
      * @param <O> the request operation type
      */
-    <O> void buffer(Request<O> request);
+    <O> void buffer(ReplicaRequest<O> request);
 
     /**
      * Pops the next request from the FIFO buffer.
@@ -73,7 +73,7 @@ public interface MessageLog {
      * buffer is empty
      */
     @Nullable
-    <O> Request<O> popBuffer();
+    <O> ReplicaRequest<O> popBuffer();
 
     /**
      * Ensures that the given sequence number is between

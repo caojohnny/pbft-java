@@ -6,11 +6,11 @@ import com.gmail.woodyc40.pbft.Client;
  * Represents a {@code REPLY} message in the PBFT protocol
  * that transmits the computational result from the replicas
  * to the client dispatching the corresponding
- * {@link Request}.
+ * {@link ClientRequest}.
  *
  * @param <R> the reply type
  */
-public interface Reply<R> {
+public interface ClientReply<R> {
     /**
      * The view number, {@code v}, which represents the
      * current state of all state machines.
@@ -21,7 +21,7 @@ public interface Reply<R> {
 
     /**
      * The timestamp, {@code t}, which was assigned to the
-     * original {@link Request} that initiated the
+     * original {@link ClientRequest} that initiated the
      * computation.
      *
      * @return the timestamp
@@ -30,7 +30,7 @@ public interface Reply<R> {
 
     /**
      * The {@link Client}, {@code c}, which dispatched the
-     * corresponding {@link Request}.
+     * corresponding {@link ClientRequest}.
      *
      * @param <O> the client operation type
      * @return the dispatching client

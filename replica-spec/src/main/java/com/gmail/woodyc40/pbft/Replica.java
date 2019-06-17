@@ -31,15 +31,15 @@ public interface Replica<O, R> {
      *
      * @return the message log
      */
-    MessageLog log();
+    ReplicaMessageLog log();
 
     /**
-     * Called by the replica {@link Transport} to indicate
+     * Called by the replica {@link ReplicaTransport} to indicate
      * that a PBFT {@code REQUEST} has been received.
      *
      * @param request the received request message
      */
-    void recvRequest(Request<O> request);
+    void recvRequest(ReplicaRequest<O> request);
 
     /**
      * Used by a non-primary to redirect a PBFT
@@ -49,7 +49,7 @@ public interface Replica<O, R> {
      * @param replicaId the primary replica ID
      * @param request the request to redirect
      */
-    void sendRequest(int replicaId, Request<O> request);
+    void sendRequest(int replicaId, ReplicaRequest<O> request);
 
     /**
      * Used by the primary replica to send a PBFT
@@ -57,16 +57,16 @@ public interface Replica<O, R> {
      *
      * @param prePrepare the message to send
      */
-    void sendPrePrepare(PrePrepare<O> prePrepare);
+    void sendPrePrepare(ReplicaPrePrepare<O> prePrepare);
 
     /**
-     * Called by the replica {@link Transport} to indicate
+     * Called by the replica {@link ReplicaTransport} to indicate
      * that a PBFT {@code PRE-PREPARE} message has been
      * multicasted by the primary to this replica.
      *
      * @param prePrepare the message received
      */
-    void recvPrePrepare(PrePrepare<O> prePrepare);
+    void recvPrePrepare(ReplicaPrePrepare<O> prePrepare);
 
     /**
      * Used by each replica to indicate that a PBFT
@@ -74,16 +74,16 @@ public interface Replica<O, R> {
      *
      * @param prepare the message to send
      */
-    void sendPrepare(Prepare prepare);
+    void sendPrepare(ReplicaPrepare prepare);
 
     /**
-     * Called by the replica {@link Transport} to indicate
+     * Called by the replica {@link ReplicaTransport} to indicate
      * that a PBFT {@code PREPARE} message has been
      * received from another replica.
      *
      * @param prepare the message received
      */
-    void recvPrepare(Prepare prepare);
+    void recvPrepare(ReplicaPrepare prepare);
 
     /**
      * Used by each replica to indicate that the prepared
@@ -92,17 +92,17 @@ public interface Replica<O, R> {
      *
      * @param commit the message to send
      */
-    void sendCommit(Commit commit);
+    void sendCommit(ReplicaCommit commit);
 
     /**
-     * Called by the replica {@link Transport} to indicate
+     * Called by the replica {@link ReplicaTransport} to indicate
      * that the source replica has entered the prepared
      * phase and that a PBFT {@code COMMIT} message was
      * received by this replica as a result.
      *
      * @param commit the message received
      */
-    void recvCommit(Commit commit);
+    void recvCommit(ReplicaCommit commit);
 
     /**
      * Used by each replica to send a PBFT {@code REPLY}
@@ -112,7 +112,7 @@ public interface Replica<O, R> {
      * @param clientId the target client ID String
      * @param reply the message to send
      */
-    void sendReply(String clientId, Reply<R> reply);
+    void sendReply(String clientId, ReplicaReply<R> reply);
 
     /**
      * Performs the computation signified by the object
@@ -126,13 +126,13 @@ public interface Replica<O, R> {
 
     /**
      * Obtains the codec component used to encode and
-     * decode messages for use with the {@link Transport}
+     * decode messages for use with the {@link ReplicaTransport}
      * layer.
      *
      * @param <T> the common transmissible type
      * @return the codec used by this replica
      */
-    <T> Codec<T> codec();
+    <T> ReplicaCodec<T> codec();
 
     /**
      * Obtains the digester component used to verify
@@ -141,15 +141,15 @@ public interface Replica<O, R> {
      * @param <T> the operation type to be digested
      * @return the digester component
      */
-    <T> Digester<T> digester();
+    <T> ReplicaDigester<T> digester();
 
     /**
      * The type of transport used for communication between
      * replicas as well as clients.
      *
      * @param <T> the encoded type used by the
-     *            {@link Transport}
+     *            {@link ReplicaTransport}
      * @return the transport used by this replica
      */
-    <T> Transport<T> transport();
+    <T> ReplicaTransport<T> transport();
 }

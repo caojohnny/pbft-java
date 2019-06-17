@@ -1,12 +1,12 @@
 package com.gmail.woodyc40.pbft.message;
 
-public class DefaultPrepare implements Prepare {
+public class DefaultReplicaPrepare implements ReplicaPrepare {
     private final int viewNumber;
     private final long seqNumber;
     private final byte[] digest;
     private final int replicaId;
 
-    public DefaultPrepare(int viewNumber, long seqNumber, byte[] digest, int replicaId) {
+    public DefaultReplicaPrepare(int viewNumber, long seqNumber, byte[] digest, int replicaId) {
         this.viewNumber = viewNumber;
         this.seqNumber = seqNumber;
         this.digest = digest;

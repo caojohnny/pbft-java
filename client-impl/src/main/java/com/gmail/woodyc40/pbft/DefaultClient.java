@@ -1,8 +1,8 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.DefaultRequest;
-import com.gmail.woodyc40.pbft.message.Reply;
-import com.gmail.woodyc40.pbft.message.Request;
+import com.gmail.woodyc40.pbft.message.DefaultClientRequest;
+import com.gmail.woodyc40.pbft.message.ClientReply;
+import com.gmail.woodyc40.pbft.message.ClientRequest;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
@@ -12,15 +12,15 @@ import java.util.concurrent.CompletableFuture;
 public class DefaultClient<O, R, T> implements Client<O, R> {
     private final int tolerance;
     private final long timeoutMs;
-    private final Codec<T> codec;
-    private final Transport<T> transport;
+    private final ClientCodec<T> codec;
+    private final ClientTransport<T> transport;
 
-    private final Map<Long, Ticket<O, R>> tickets = new HashMap<>();
+    private final Map<Long, ClientTicket<O, R>> tickets = new HashMap<>();
 
     public DefaultClient(int tolerance,
                          long timeoutMs,
-                         Codec<T> codec,
-                         Transport<T> transport) {
+                         ClientCodec<T> codec,
+                         ClientTransport<T> transport) {
         this.tolerance = tolerance;
         this.timeoutMs = timeoutMs;
         this.codec = codec;
@@ -47,28 +47,28 @@ public class DefaultClient<O, R, T> implements Client<O, R> {
     }
 
     @Override
-    public Ticket<O, R> sendRequest(O operation) {
+    public ClientTicket<O, R> sendRequest(O operation) {
         long timestamp = this.nextTimestamp();
-        Request<O> req = new DefaultRequest<>(operation, timestamp, this);
+        ClientRequest<O> req = new DefaultClientRequest<>(operation, timestamp, this);
 
         int primaryId = this.transport.primaryId();
         T encodedRequest = this.codec.encodeRequest(req);
         this.transport.sendRequest(primaryId, encodedRequest);
 
-        Ticket<O, R> ticket = new DefaultTicket<>(this, req);
+        ClientTicket<O, R> ticket = new DefaultClientTicket<>(this, req);
         this.tickets.put(timestamp, ticket);
 
         return ticket;
     }
 
-    public boolean checkTimeout(Ticket<O, R> ticket) {
+    public boolean checkTimeout(ClientTicket<O, R> ticket) {
         long now = System.currentTimeMillis();
         long start = ticket.dispatchTime();
         long elapsed = now - start;
         if (elapsed >= this.timeoutMs) {
             ticket.updateDispatchTime();
 
-            Request<O> request = ticket.request();
+            ClientRequest<O> request = ticket.request();
             T encodedRequest = this.codec.encodeRequest(request);
             this.transport.multicastRequest(encodedRequest);
 
@@ -79,12 +79,16 @@ public class DefaultClient<O, R, T> implements Client<O, R> {
     }
 
     @Override
-    public @Nullable Ticket<O, R> recvReply(Reply<R> reply) {
+    public @Nullable ClientTicket<O, R> recvReply(ClientReply<R> reply) {
         long timestamp = reply.timestamp();
-        Ticket<O, R> ticket = this.tickets.get(timestamp);
+        ClientTicket<O, R> ticket = this.tickets.get(timestamp);
         if (ticket == null) {
             return null;
         }
+
+        int viewNumber = reply.viewNumber();
+        int primaryId = viewNumber % this.transport.countKnownReplicas();
+        this.transport.setPrimaryId(primaryId);
 
         int replicaId = reply.replicaId();
         R result = reply.result();
@@ -99,12 +103,12 @@ public class DefaultClient<O, R, T> implements Client<O, R> {
     }
 
     @Override
-    public Codec<T> codec() {
+    public ClientCodec<T> codec() {
         return this.codec;
     }
 
     @Override
-    public Transport<T> transport() {
+    public ClientTransport<T> transport() {
         return this.transport;
     }
 }

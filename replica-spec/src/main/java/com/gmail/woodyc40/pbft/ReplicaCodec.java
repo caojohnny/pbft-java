@@ -5,15 +5,15 @@ import com.gmail.woodyc40.pbft.message.*;
 /**
  * A component that transforms messages to and from a
  * format that is transmisisble using a
- * {@link Transport}.
+ * {@link ReplicaTransport}.
  *
- * <p>A {@link Codec} should be capable of handling message
+ * <p>A {@link ReplicaCodec} should be capable of handling message
  * cryptography, i.e. signing, and generating MACs as it
  * sees fit.</p>
  *
  * @param <T> the transmissible type
  */
-public interface Codec<T> {
+public interface ReplicaCodec<T> {
     /**
      * Decodes a request, usually either from a client or
      * from a replica redirect.
@@ -22,7 +22,7 @@ public interface Codec<T> {
      * @param <O> the request operation type
      * @return the decoded request message
      */
-    <O> Request<O> decodeRequest(T request);
+    <O> ReplicaRequest<O> decodeRequest(T request);
 
     /**
      * Encodes a request message, used for redirects.
@@ -31,7 +31,7 @@ public interface Codec<T> {
      * @param <O> the request operation type
      * @return the encoded request message
      */
-    <O> T encodeRequest(Request<O> request);
+    <O> T encodeRequest(ReplicaRequest<O> request);
 
     /**
      * Decodes a pre-prepare message, sent the primary once
@@ -41,7 +41,7 @@ public interface Codec<T> {
      * @param <O> the requested operation type
      * @return the decoded pre-prepare message
      */
-    <O> PrePrepare<O> decodePrePrepare(T prePrepare);
+    <O> ReplicaPrePrepare<O> decodePrePrepare(T prePrepare);
 
     /**
      * Encodes a pre-prepare message to multicast to
@@ -51,7 +51,7 @@ public interface Codec<T> {
      * @param <O> the requested operation type
      * @return the encoded pre-prepare message
      */
-    <O> T encodePrePrepare(PrePrepare<O> prePrepare);
+    <O> T encodePrePrepare(ReplicaPrePrepare<O> prePrepare);
 
     /**
      * Decodes a prepare message sent by other replicas
@@ -60,7 +60,7 @@ public interface Codec<T> {
      * @param prepare the encoded prepare message
      * @return the decoded prepare message
      */
-    Prepare decodePrepare(T prepare);
+    ReplicaPrepare decodePrepare(T prepare);
 
     /**
      * Encodes a prepare message to indidcate that this
@@ -69,7 +69,7 @@ public interface Codec<T> {
      * @param prepare the prepare message
      * @return the encoded prepare message
      */
-    T encodePrepare(Prepare prepare);
+    T encodePrepare(ReplicaPrepare prepare);
 
     /**
      * Decodes a commit message sent to indicate that other
@@ -79,7 +79,7 @@ public interface Codec<T> {
      * @param commit the encoded commit message
      * @return the decoded commit message
      */
-    Commit decodeCommit(T commit);
+    ReplicaCommit decodeCommit(T commit);
 
     /**
      * Encodes the commit message to indicate that this
@@ -89,7 +89,7 @@ public interface Codec<T> {
      * @param commit the commit message
      * @return the encoded commit message
      */
-    T encodeCommit(Commit commit);
+    T encodeCommit(ReplicaCommit commit);
 
     /**
      * Encodes the given reply to notify the client of the
@@ -99,5 +99,5 @@ public interface Codec<T> {
      * @param <R> the result type
      * @return the encoded reply message
      */
-    <R> T encodeReply(Reply<R> reply);
+    <R> T encodeReply(ReplicaReply<R> reply);
 }

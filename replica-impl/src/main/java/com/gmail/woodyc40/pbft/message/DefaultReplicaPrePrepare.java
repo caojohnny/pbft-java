@@ -1,12 +1,12 @@
 package com.gmail.woodyc40.pbft.message;
 
-public class DefaultPrePrepare<O> implements PrePrepare<O> {
+public class DefaultReplicaPrePrepare<O> implements ReplicaPrePrepare<O> {
     private final int viewNumber;
     private final long seqNumber;
     private final byte[] digest;
-    private final Request<O> request;
+    private final ReplicaRequest<O> request;
 
-    public DefaultPrePrepare(int viewNumber, long seqNumber, byte[] digest, Request<O> request) {
+    public DefaultReplicaPrePrepare(int viewNumber, long seqNumber, byte[] digest, ReplicaRequest<O> request) {
         this.viewNumber = viewNumber;
         this.seqNumber = seqNumber;
         this.digest = digest;
@@ -29,7 +29,7 @@ public class DefaultPrePrepare<O> implements PrePrepare<O> {
     }
 
     @Override
-    public Request<O> request() {
+    public ReplicaRequest<O> request() {
         return this.request;
     }
 }

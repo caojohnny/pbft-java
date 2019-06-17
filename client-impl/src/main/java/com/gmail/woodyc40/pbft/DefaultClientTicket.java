@@ -1,20 +1,20 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.Request;
+import com.gmail.woodyc40.pbft.message.ClientRequest;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class DefaultTicket<O, R> implements Ticket<O, R> {
+public class DefaultClientTicket<O, R> implements ClientTicket<O, R> {
     private final Client<O, R> client;
-    private final Request<O> request;
+    private final ClientRequest<O> request;
     private final CompletableFuture<R> future = new CompletableFuture<>();
 
     private long dispatchTime;
     private final Map<Integer, R> replies = new HashMap<>();
 
-    public DefaultTicket(Client<O, R> client, Request<O> request) {
+    public DefaultClientTicket(Client<O, R> client, ClientRequest<O> request) {
         this.client = client;
         this.request = request;
         this.dispatchTime = request.timestamp();
@@ -36,7 +36,7 @@ public class DefaultTicket<O, R> implements Ticket<O, R> {
     }
 
     @Override
-    public Request<O> request() {
+    public ClientRequest<O> request() {
         return this.request;
     }
 

@@ -2,12 +2,12 @@ package com.gmail.woodyc40.pbft.message;
 
 import com.gmail.woodyc40.pbft.Client;
 
-public class DefaultRequest<O> implements Request<O> {
+public class DefaultClientRequest<O> implements ClientRequest<O> {
     private final O operation;
     private final long timestamp;
     private final Client<?, ?> client;
 
-    public DefaultRequest(O operation, long timestamp, Client<?, ?> client) {
+    public DefaultClientRequest(O operation, long timestamp, Client<?, ?> client) {
         this.operation = operation;
         this.timestamp = timestamp;
         this.client = client;

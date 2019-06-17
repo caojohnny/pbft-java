@@ -9,7 +9,7 @@ import com.gmail.woodyc40.pbft.Replica;
  *
  * @param <R> the result type
  */
-public interface Reply<R> {
+public interface ReplicaReply<R> {
     /**
      * The current view number of the state machine system.
      *
@@ -18,7 +18,7 @@ public interface Reply<R> {
     int viewNumber();
 
     /**
-     * The timestamp of the original {@link Request} that
+     * The timestamp of the original {@link ReplicaRequest} that
      * prompted the computation.
      *
      * @return the timestamp
@@ -26,7 +26,7 @@ public interface Reply<R> {
     long timestamp();
 
     /**
-     * The client ID from the original {@link Request} that
+     * The client ID from the original {@link ReplicaRequest} that
      * prompted the computation.
      *
      * @return the client ID

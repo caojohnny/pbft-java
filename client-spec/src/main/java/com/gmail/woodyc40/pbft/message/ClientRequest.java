@@ -9,7 +9,7 @@ import com.gmail.woodyc40.pbft.Client;
  *
  * @param <O> the operation type
  */
-public interface Request<O> {
+public interface ClientRequest<O> {
     /**
      * The operation, {@code o}, that the {@link Client}
      * wishes to have fulfilled by the replicas.

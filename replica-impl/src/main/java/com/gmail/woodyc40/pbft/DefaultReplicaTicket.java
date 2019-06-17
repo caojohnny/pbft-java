@@ -1,22 +1,22 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.Commit;
-import com.gmail.woodyc40.pbft.message.PrePrepare;
-import com.gmail.woodyc40.pbft.message.Prepare;
-import com.gmail.woodyc40.pbft.message.Request;
+import com.gmail.woodyc40.pbft.message.ReplicaCommit;
+import com.gmail.woodyc40.pbft.message.ReplicaPrePrepare;
+import com.gmail.woodyc40.pbft.message.ReplicaPrepare;
+import com.gmail.woodyc40.pbft.message.ReplicaRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class DefaultTicket<O> implements Ticket<O> {
+public class DefaultReplicaTicket<O> implements ReplicaTicket<O> {
     private final int viewNumber;
     private final long seqNumber;
-    private final Request<O> request;
+    private final ReplicaRequest<O> request;
     private final List<Object> messages = new ArrayList<>();
 
-    public DefaultTicket(int viewNumber, long seqNumber, Request<O> request) {
+    public DefaultReplicaTicket(int viewNumber, long seqNumber, ReplicaRequest<O> request) {
         this.viewNumber = viewNumber;
         this.seqNumber = seqNumber;
         this.request = request;
@@ -37,16 +37,16 @@ public class DefaultTicket<O> implements Ticket<O> {
         this.messages.add(message);
     }
 
-    private boolean matchesPrePrepare(PrePrepare<O> prePrepare, Prepare prepare) {
+    private boolean matchesPrePrepare(ReplicaPrePrepare<O> prePrepare, ReplicaPrepare prepare) {
         return Arrays.equals(prePrepare.digest(), prepare.digest());
     }
 
     @Override
     public boolean isPrepared(int tolerance) {
-        PrePrepare<O> prePrepare = null;
+        ReplicaPrePrepare<O> prePrepare = null;
         for (Object message : this.messages) {
-            if (message instanceof PrePrepare) {
-                prePrepare = (PrePrepare<O>) message;
+            if (message instanceof ReplicaPrePrepare) {
+                prePrepare = (ReplicaPrePrepare<O>) message;
                 break;
             }
         }
@@ -58,8 +58,8 @@ public class DefaultTicket<O> implements Ticket<O> {
         final int requiredMatches = 2 * tolerance;
         int matchingPrepares = 0;
         for (Object message : this.messages) {
-            if (message instanceof Prepare) {
-                Prepare prepare = (Prepare) message;
+            if (message instanceof ReplicaPrepare) {
+                ReplicaPrepare prepare = (ReplicaPrepare) message;
                 if (this.matchesPrePrepare(prePrepare, prepare)) {
                     matchingPrepares++;
 
@@ -75,10 +75,10 @@ public class DefaultTicket<O> implements Ticket<O> {
 
     @Override
     public boolean isCommittedLocal(int tolerance) {
-        PrePrepare<O> prePrepare = null;
+        ReplicaPrePrepare<O> prePrepare = null;
         for (Object message : this.messages) {
-            if (message instanceof PrePrepare) {
-                prePrepare = (PrePrepare<O>) message;
+            if (message instanceof ReplicaPrePrepare) {
+                prePrepare = (ReplicaPrePrepare<O>) message;
                 break;
             }
         }
@@ -92,12 +92,12 @@ public class DefaultTicket<O> implements Ticket<O> {
         int matchingPrepares = 0;
         int commits = 0;
         for (Object message : this.messages) {
-            if (message instanceof Prepare) {
-                Prepare prepare = (Prepare) message;
+            if (message instanceof ReplicaPrepare) {
+                ReplicaPrepare prepare = (ReplicaPrepare) message;
                 if (this.matchesPrePrepare(prePrepare, prepare)) {
                     matchingPrepares++;
                 }
-            } else if (message instanceof Commit) {
+            } else if (message instanceof ReplicaCommit) {
                 commits++;
             }
         }
@@ -111,7 +111,7 @@ public class DefaultTicket<O> implements Ticket<O> {
     }
 
     @Override
-    public Request<O> request() {
+    public ReplicaRequest<O> request() {
         return this.request;
     }
 }

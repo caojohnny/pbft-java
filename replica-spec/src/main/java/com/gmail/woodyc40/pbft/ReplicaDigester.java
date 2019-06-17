@@ -1,6 +1,6 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.Request;
+import com.gmail.woodyc40.pbft.message.ReplicaRequest;
 
 /**
  * Represents a component which provides digesting
@@ -8,12 +8,12 @@ import com.gmail.woodyc40.pbft.message.Request;
  *
  * @param <O> the operation type which to digest
  */
-public interface Digester<O> {
+public interface ReplicaDigester<O> {
     /**
      * Produces a digest of the given request message.
      *
      * @param request the request to digest
      * @return the digest as a byte array
      */
-    byte[] digest(Request<O> request);
+    byte[] digest(ReplicaRequest<O> request);
 }

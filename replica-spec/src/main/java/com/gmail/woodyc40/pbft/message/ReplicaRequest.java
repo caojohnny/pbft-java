@@ -6,7 +6,7 @@ package com.gmail.woodyc40.pbft.message;
  *
  * @param <O> the operation type
  */
-public interface Request<O> {
+public interface ReplicaRequest<O> {
     /**
      * Obtains the operation serialized by the request.
      *
@@ -24,7 +24,7 @@ public interface Request<O> {
 
     /**
      * Obtains an identifier for whichever client sent this
-     * {@link Request}.
+     * {@link ReplicaRequest}.
      *
      * @return the client ID value
      */

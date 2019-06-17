@@ -1,6 +1,6 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.Request;
+import com.gmail.woodyc40.pbft.message.ReplicaRequest;
 
 import java.util.Collection;
 
@@ -10,7 +10,7 @@ import java.util.Collection;
  *
  * @param <O> the operation type for the request
  */
-public interface Ticket<O> {
+public interface ReplicaTicket<O> {
     /**
      * Obtains the view number in which this ticket was
      * created.
@@ -69,9 +69,9 @@ public interface Ticket<O> {
 
     /**
      * The request that prompted the replica to insert this
-     * {@link Ticket} into its queue.
+     * {@link ReplicaTicket} into its queue.
      *
      * @return the original request
      */
-    Request<O> request();
+    ReplicaRequest<O> request();
 }

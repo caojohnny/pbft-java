@@ -1,19 +1,27 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.Reply;
-import com.gmail.woodyc40.pbft.message.Request;
+import com.gmail.woodyc40.pbft.message.ClientReply;
+import com.gmail.woodyc40.pbft.message.ClientRequest;
 
 import java.util.stream.IntStream;
 
 /**
  * Represents the link from a {@link Client} to the replicas
- * which will dispatch {@link Request}s and receive
- * {@link Reply}s.
+ * which will dispatch {@link ClientRequest}s and receive
+ * {@link ClientReply}s.
  *
  * @param <T> the type of transmissible data that represents
  *            encoded messages
  */
-public interface Transport<T> {
+public interface ClientTransport<T> {
+    /**
+     * Sets the primary ID based on the view number found
+     * in the {@link ClientReply} message.
+     *
+     * @param primaryId the new primary ID
+     */
+    void setPrimaryId(int primaryId);
+
     /**
      * Obtains the ID number of what is currently believed
      * to be the primary replica.
@@ -31,7 +39,15 @@ public interface Transport<T> {
     IntStream knownReplicaIds();
 
     /**
-     * Sends the given encoded {@link Request} message to
+     * Obtains the number of replicas that are currently
+     * known to this client.
+     *
+     * @return the number of replicas available
+     */
+    int countKnownReplicas();
+
+    /**
+     * Sends the given encoded {@link ClientRequest} message to
      * the replica that has the given ID number.
      *
      * @param replicaId the ID number of the replica
@@ -40,7 +56,7 @@ public interface Transport<T> {
     void sendRequest(int replicaId, T request);
 
     /**
-     * Sends the given encoded {@link Request} to all known
+     * Sends the given encoded {@link ClientRequest} to all known
      * replicas.
      *
      * @param request the encoded request message

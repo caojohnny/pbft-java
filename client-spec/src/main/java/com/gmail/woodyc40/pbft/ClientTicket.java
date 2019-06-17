@@ -1,12 +1,12 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.Reply;
-import com.gmail.woodyc40.pbft.message.Request;
+import com.gmail.woodyc40.pbft.message.ClientReply;
+import com.gmail.woodyc40.pbft.message.ClientRequest;
 
 import java.util.concurrent.CompletableFuture;
 
 /**
- * A {@link Ticket} represents a sort of receipt for sending
+ * A {@link ClientTicket} represents a sort of receipt for sending
  * an operation type {@code O} using a {@link Client}. It
  * allows a user to reference the sent operation and
  * retrieve its result when the {@link Client} confirms that
@@ -15,9 +15,9 @@ import java.util.concurrent.CompletableFuture;
  * @param <O> the operation type
  * @param <R> the result type
  */
-public interface Ticket<O, R> {
+public interface ClientTicket<O, R> {
     /**
-     * Obtains the client that created this {@link Ticket}.
+     * Obtains the client that created this {@link ClientTicket}.
      *
      * @return the client that sent the request represented
      * by this receipt
@@ -41,16 +41,16 @@ public interface Ticket<O, R> {
 
     /**
      * Obtains the representation of the dispatched
-     * {@link Request} object as a result of calling
+     * {@link ClientRequest} object as a result of calling
      * {@link Client#sendRequest(Object)}.
      *
      * @return the request
      */
-    Request<O> request();
+    ClientRequest<O> request();
 
     /**
      * Called by a {@link Client} to indicate that it has
-     * received a {@link Reply} containing a result which
+     * received a {@link ClientReply} containing a result which
      * should be handled by this pending request ticket.
      *
      * @param replicaId the ID of the replica sending the
