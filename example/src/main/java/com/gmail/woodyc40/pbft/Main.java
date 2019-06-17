@@ -1,8 +1,12 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.client.AdditionEncoder;
-import com.gmail.woodyc40.pbft.client.AdditionTransport;
+import com.gmail.woodyc40.pbft.client.AdditionClientEncoder;
+import com.gmail.woodyc40.pbft.client.AdditionClientTransport;
 import com.gmail.woodyc40.pbft.message.DefaultClientReply;
+import com.gmail.woodyc40.pbft.replica.AdditionReplica;
+import com.gmail.woodyc40.pbft.replica.AdditionReplicaEncoder;
+import com.gmail.woodyc40.pbft.replica.AdditionReplicaTransport;
+import com.gmail.woodyc40.pbft.replica.NoopDigester;
 import com.gmail.woodyc40.pbft.type.AdditionOperation;
 import com.gmail.woodyc40.pbft.type.AdditionResult;
 import com.google.gson.Gson;
@@ -22,15 +26,40 @@ public class Main {
 
     public static void main(String[] args) {
         try (JedisPool pool = new JedisPool()) {
-            AdditionEncoder codec = new AdditionEncoder();
-            AdditionTransport transport = new AdditionTransport(pool, REPLICA_COUNT);
+            for (int i = 0; i < REPLICA_COUNT; i++) {
+                DefaultReplicaMessageLog log = new DefaultReplicaMessageLog(100, 100);
+                AdditionReplicaEncoder replicaEncoder = new AdditionReplicaEncoder();
+                NoopDigester digester = new NoopDigester();
+                AdditionReplicaTransport replicaTransport = new AdditionReplicaTransport(pool, REPLICA_COUNT);
+
+                AdditionReplica replica = new AdditionReplica(
+                        i,
+                        TOLERANCE,
+                        log,
+                        replicaEncoder,
+                        digester,
+                        replicaTransport);
+                new Thread(() -> {
+                    try (Jedis jedis = pool.getResource()) {
+                        jedis.subscribe(new JedisPubSub() {
+                            @Override
+                            public void onMessage(String channel, String message) {
+                                handleReplica(replica, message);
+                            }
+                        }, "replica-" + replica.replicaId());
+                    }
+                }).start();
+            }
+
+            AdditionClientEncoder clientEncoder = new AdditionClientEncoder();
+            AdditionClientTransport clientTransport = new AdditionClientTransport(pool, REPLICA_COUNT);
 
             Client<AdditionOperation, AdditionResult, String> client = new DefaultClient<>(
                     "client-0",
                     TOLERANCE,
                     TIMEOUT_MS,
-                    codec,
-                    transport);
+                    clientEncoder,
+                    clientTransport);
 
             new Thread(() -> executeOperation(client)).start();
 
@@ -38,7 +67,7 @@ public class Main {
                 jedis.subscribe(new JedisPubSub() {
                     @Override
                     public void onMessage(String channel, String message) {
-                        handleIncomingMessage(client, message);
+                        handleClient(client, message);
                     }
                 }, client.clientId());
             }
@@ -63,8 +92,16 @@ public class Main {
         }
     }
 
-    private static void handleIncomingMessage(Client<AdditionOperation, AdditionResult, String> client,
-                                              String data) {
+    private static void handleReplica(Replica<AdditionOperation, AdditionResult, String> replica,
+                                      String data) {
+        Gson gson = GSON_PROVIDER.get();
+        JsonObject root = gson.fromJson(data, JsonObject.class);
+
+        // TODO: Handle incoming messages
+    }
+
+    private static void handleClient(Client<AdditionOperation, AdditionResult, String> client,
+                                     String data) {
         Gson gson = GSON_PROVIDER.get();
         JsonObject root = gson.fromJson(data, JsonObject.class);
 

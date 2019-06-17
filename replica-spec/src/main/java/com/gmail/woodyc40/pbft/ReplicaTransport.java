@@ -39,17 +39,17 @@ public interface ReplicaTransport<T> {
      * actual primary replica.
      *
      * @param replicaId the replica to send the request
-     * @param request the encoded request to send
+     * @param data the encoded request to send
      */
-    void sendMessage(int replicaId, T request);
+    void sendMessage(int replicaId, T data);
 
     /**
      * Multicasts a PBFT {@code PRE-PREPARE} message in
      * response to a request.
      *
-     * @param prePrepare the encoded preprepare message
+     * @param data the encoded preprepare message
      */
-    void multicast(T prePrepare);
+    void multicast(T data);
 
     /**
      * Sends a reply message to the client with the given

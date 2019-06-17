@@ -5,7 +5,7 @@ import com.gmail.woodyc40.pbft.message.ClientRequest;
 import com.gmail.woodyc40.pbft.type.AdditionOperation;
 import com.google.gson.JsonObject;
 
-public class AdditionEncoder implements ClientEncoder<AdditionOperation, String> {
+public class AdditionClientEncoder implements ClientEncoder<AdditionOperation, String> {
     @Override
     public String encodeRequest(ClientRequest<AdditionOperation> request) {
         AdditionOperation op = request.operation();

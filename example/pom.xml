@@ -21,7 +21,7 @@
 
         <dependency>
             <groupId>com.gmail.woodyc40</groupId>
-            <artifactId>pbft-java-client-spec</artifactId>
+            <artifactId>pbft-java-replica-impl</artifactId>
             <version>${pbft-version}</version>
             <scope>compile</scope>
         </dependency>
