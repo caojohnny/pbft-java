@@ -5,16 +5,15 @@ import com.gmail.woodyc40.pbft.message.ReplicaPrePrepare;
 import com.gmail.woodyc40.pbft.message.ReplicaPrepare;
 import com.gmail.woodyc40.pbft.message.ReplicaRequest;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class DefaultReplicaTicket<O> implements ReplicaTicket<O> {
     private final int viewNumber;
     private final long seqNumber;
     private final ReplicaRequest<O> request;
-    private final List<Object> messages = new ArrayList<>();
+    private final Collection<Object> messages = new ConcurrentLinkedQueue<>();
 
     public DefaultReplicaTicket(int viewNumber, long seqNumber, ReplicaRequest<O> request) {
         this.viewNumber = viewNumber;

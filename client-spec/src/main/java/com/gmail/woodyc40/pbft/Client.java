@@ -9,10 +9,24 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * sends requests of type {@code O} and retrieves a result
  * of type {@code R}.
  *
+ * <p>Users are required to call the following methods:
+ *   - {@link #recvReply(ClientReply)}</p>
+ *
  * @param <O> the operation type
  * @param <R> the result type
+ * @param <T> the transmissible communication type
  */
-public interface Client<O, R> {
+public interface Client<O, R, T> {
+    /**
+     * While not necessarily part of the PBFT spec,
+     * this is more or less of a QoL field to ensure that
+     * implementors require a client ID in order to
+     * allow replicas to identify the message source.
+     *
+     * @return the client ID value
+     */
+    String clientId();
+
     /**
      * The configured maximum failure tolerance, or the
      * maximum number of faulty nodes that the client is
@@ -72,23 +86,19 @@ public interface Client<O, R> {
     ClientTicket<O, R> recvReply(ClientReply<R> reply);
 
     /**
-     * Obtains the {@link ClientCodec} type used by this client
+     * Obtains the {@link ClientEncoder} type used by this client
      * to encode {@link ClientRequest} messages.
      *
-     * @param <T> the transmissible type specified by the
-     *            {@link ClientCodec}
-     * @return the {@link ClientCodec} used by this {@link Client}
+     * @return the {@link ClientEncoder} used by this {@link Client}
      */
-    <T> ClientCodec<T> codec();
+    ClientEncoder<O, T> encoder();
 
     /**
      * Obtains the {@link ClientTransport} type used by this
      * client to send messages.
      *
-     * @param <T> the type of transmissible data type used
-     *            by the {@link ClientTransport}
      * @return the {@link ClientTransport} used by this
      * {@link Client}
      */
-    <T> ClientTransport<T> transport();
+    ClientTransport<T> transport();
 }

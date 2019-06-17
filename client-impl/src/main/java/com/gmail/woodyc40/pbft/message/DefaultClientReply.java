@@ -5,11 +5,11 @@ import com.gmail.woodyc40.pbft.Client;
 public class DefaultClientReply<R> implements ClientReply<R> {
     private final int viewNumber;
     private final long timestamp;
-    private final Client<?, ?> client;
+    private final Client<?, ?, ?> client;
     private final int replicaId;
     private final R result;
 
-    public DefaultClientReply(int viewNumber, long timestamp, Client<?, ?> client, int replicaId, R result) {
+    public DefaultClientReply(int viewNumber, long timestamp, Client<?, ?, ?> client, int replicaId, R result) {
         this.viewNumber = viewNumber;
         this.timestamp = timestamp;
         this.client = client;
@@ -28,8 +28,8 @@ public class DefaultClientReply<R> implements ClientReply<R> {
     }
 
     @Override
-    public <O> Client<O, R> client() {
-        return (Client<O, R>) this.client;
+    public <O, T> Client<O, R, T> client() {
+        return (Client<O, R, T>) this.client;
     }
 
     @Override

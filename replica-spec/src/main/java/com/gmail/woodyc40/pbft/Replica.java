@@ -6,10 +6,17 @@ import com.gmail.woodyc40.pbft.message.*;
  * Represents a replicated state-machine in the PBFT
  * algorithm.
  *
+ * <p>Users are required to call the following methods:
+ *   - {@link #recvRequest(ReplicaRequest)}
+ *   - {@link #recvPrePrepare(ReplicaPrePrepare)}
+ *   - {@link #recvRequest(ReplicaRequest)}
+ *   - {@link #recvCommit(ReplicaCommit)}</p>
+ *
  * @param <O> the operation type
  * @param <R> the result type of the operation
+ * @param <T> the transmissible type
  */
-public interface Replica<O, R> {
+public interface Replica<O, R, T> {
     /**
      * The ID number of this {@link Replica}.
      *
@@ -125,31 +132,27 @@ public interface Replica<O, R> {
     R compute(O operation);
 
     /**
-     * Obtains the codec component used to encode and
+     * Obtains the encoder component used to encode and
      * decode messages for use with the {@link ReplicaTransport}
      * layer.
      *
-     * @param <T> the common transmissible type
-     * @return the codec used by this replica
+     * @return the encoder used by this replica
      */
-    <T> ReplicaCodec<T> codec();
+    ReplicaEncoder<O, R, T> encoder();
 
     /**
      * Obtains the digester component used to verify
      * request integrity.
      *
-     * @param <T> the operation type to be digested
      * @return the digester component
      */
-    <T> ReplicaDigester<T> digester();
+    ReplicaDigester<O> digester();
 
     /**
      * The type of transport used for communication between
      * replicas as well as clients.
      *
-     * @param <T> the encoded type used by the
-     *            {@link ReplicaTransport}
      * @return the transport used by this replica
      */
-    <T> ReplicaTransport<T> transport();
+    ReplicaTransport<T> transport();
 }

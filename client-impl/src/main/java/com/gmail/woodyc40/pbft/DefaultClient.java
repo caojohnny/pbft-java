@@ -1,30 +1,40 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.DefaultClientRequest;
 import com.gmail.woodyc40.pbft.message.ClientReply;
 import com.gmail.woodyc40.pbft.message.ClientRequest;
+import com.gmail.woodyc40.pbft.message.DefaultClientRequest;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
-public class DefaultClient<O, R, T> implements Client<O, R> {
+public class DefaultClient<O, R, T> implements Client<O, R, T> {
+    private final String clientId;
     private final int tolerance;
     private final long timeoutMs;
-    private final ClientCodec<T> codec;
+    private final ClientEncoder<O, T> codec;
     private final ClientTransport<T> transport;
 
-    private final Map<Long, ClientTicket<O, R>> tickets = new HashMap<>();
+    private final AtomicLong timestampCounter = new AtomicLong();
+    private final Map<Long, ClientTicket<O, R>> tickets = new ConcurrentHashMap<>();
 
-    public DefaultClient(int tolerance,
+    public DefaultClient(String clientId,
+                         int tolerance,
                          long timeoutMs,
-                         ClientCodec<T> codec,
+                         ClientEncoder<O, T> encoder,
                          ClientTransport<T> transport) {
+        this.clientId = clientId;
         this.tolerance = tolerance;
         this.timeoutMs = timeoutMs;
-        this.codec = codec;
+        this.codec = encoder;
         this.transport = transport;
+    }
+
+    @Override
+    public String clientId() {
+        return this.clientId;
     }
 
     @Override
@@ -38,12 +48,7 @@ public class DefaultClient<O, R, T> implements Client<O, R> {
     }
 
     private long nextTimestamp() {
-        long timestamp = System.currentTimeMillis();
-        while (this.tickets.containsKey(timestamp)) {
-            timestamp++;
-        }
-
-        return timestamp;
+        return this.timestampCounter.getAndIncrement();
     }
 
     @Override
@@ -103,7 +108,7 @@ public class DefaultClient<O, R, T> implements Client<O, R> {
     }
 
     @Override
-    public ClientCodec<T> codec() {
+    public ClientEncoder<O, T> encoder() {
         return this.codec;
     }
 

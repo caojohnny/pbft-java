@@ -3,27 +3,28 @@ package com.gmail.woodyc40.pbft;
 import com.gmail.woodyc40.pbft.message.*;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicLong;
 
-public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
+public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
     private final int replicaId;
     private final int tolerance;
     private final ReplicaMessageLog log;
-    private final ReplicaCodec<T> codec;
+    private final ReplicaEncoder<O, R, T> encoder;
     private final ReplicaDigester<O> digester;
     private final ReplicaTransport<T> transport;
 
-    private long seqCounter;
+    private final AtomicLong seqCounter = new AtomicLong();
 
     public DefaultReplica(int replicaId,
                           int tolerance,
                           ReplicaMessageLog log,
-                          ReplicaCodec<T> codec,
+                          ReplicaEncoder<O, R, T> encoder,
                           ReplicaDigester<O> digester,
                           ReplicaTransport<T> transport) {
         this.replicaId = replicaId;
         this.tolerance = tolerance;
         this.log = log;
-        this.codec = codec;
+        this.encoder = encoder;
         this.digester = digester;
         this.transport = transport;
     }
@@ -60,7 +61,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
         }
 
         int currentViewNumber = this.transport.viewNumber();
-        long seqNumber = this.seqCounter++;
+        long seqNumber = this.seqCounter.getAndIncrement();
 
         ReplicaTicket<O> ticket = this.log.newTicket(currentViewNumber, seqNumber, request);
         ticket.append(request);
@@ -80,14 +81,14 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
     @Override
     public void sendRequest(int replicaId, ReplicaRequest<O> request) {
-        T encodedPrePrepare = this.codec.encodeRequest(request);
-        this.transport.redirectRequest(replicaId, encodedPrePrepare);
+        T encodedPrePrepare = this.encoder.encodeRequest(request);
+        this.transport.sendMessage(replicaId, encodedPrePrepare);
     }
 
     @Override
     public void sendPrePrepare(ReplicaPrePrepare<O> prePrepare) {
-        T encodedPrePrepare = this.codec.encodePrePrepare(prePrepare);
-        this.transport.multicastPrePrepare(encodedPrePrepare);
+        T encodedPrePrepare = this.encoder.encodePrePrepare(prePrepare);
+        this.transport.multicast(encodedPrePrepare);
     }
 
     private boolean verifyPhaseMessage(ReplicaPhaseMessage message) {
@@ -152,8 +153,8 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
     @Override
     public void sendPrepare(ReplicaPrepare prepare) {
-        T encodedPrepare = this.codec.encodePrepare(prepare);
-        this.transport.multicastPrePrepare(encodedPrepare);
+        T encodedPrepare = this.encoder.encodePrepare(prepare);
+        this.transport.multicast(encodedPrepare);
     }
 
     @Override
@@ -185,8 +186,8 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
     @Override
     public void sendCommit(ReplicaCommit commit) {
-        T encodedCommit = this.codec.encodeCommit(commit);
-        this.transport.multicastPrePrepare(encodedCommit);
+        T encodedCommit = this.encoder.encodeCommit(commit);
+        this.transport.multicast(encodedCommit);
     }
 
     @Override
@@ -230,15 +231,15 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R> {
 
     @Override
     public void sendReply(String clientId, ReplicaReply<R> reply) {
-        T encodedReply = this.codec.encodeReply(reply);
+        T encodedReply = this.encoder.encodeReply(reply);
         this.transport.sendReply(clientId, encodedReply);
 
         this.handleNextBufferedRequest();
     }
 
     @Override
-    public ReplicaCodec<T> codec() {
-        return this.codec;
+    public ReplicaEncoder<O, R, T> encoder() {
+        return this.encoder;
     }
 
     @Override

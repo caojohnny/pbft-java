@@ -5,9 +5,9 @@ import com.gmail.woodyc40.pbft.Client;
 public class DefaultClientRequest<O> implements ClientRequest<O> {
     private final O operation;
     private final long timestamp;
-    private final Client<?, ?> client;
+    private final Client<?, ?, ?> client;
 
-    public DefaultClientRequest(O operation, long timestamp, Client<?, ?> client) {
+    public DefaultClientRequest(O operation, long timestamp, Client<?, ?, ?> client) {
         this.operation = operation;
         this.timestamp = timestamp;
         this.client = client;
@@ -24,7 +24,7 @@ public class DefaultClientRequest<O> implements ClientRequest<O> {
     }
 
     @Override
-    public <R> Client<O, R> client() {
-        return (Client<O, R>) this.client;
+    public <R, T> Client<O, R, T> client() {
+        return (Client<O, R, T>) this.client;
     }
 }

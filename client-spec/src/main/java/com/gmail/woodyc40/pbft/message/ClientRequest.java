@@ -31,7 +31,8 @@ public interface ClientRequest<O> {
      * request.
      *
      * @param <R> the reply type for the {@link Client}
+     * @param <T> the transmissible type used by the client
      * @return the dispatching client
      */
-    <R> Client<O, R> client();
+    <R, T> Client<O, R, T> client();
 }

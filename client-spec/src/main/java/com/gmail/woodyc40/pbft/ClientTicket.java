@@ -19,10 +19,11 @@ public interface ClientTicket<O, R> {
     /**
      * Obtains the client that created this {@link ClientTicket}.
      *
+     * @param <T> the transmissible type used by the client
      * @return the client that sent the request represented
      * by this receipt
      */
-    Client<O, R> client();
+    <T> Client<O, R, T> client();
 
     /**
      * Sets the dispatch time to

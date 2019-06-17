@@ -7,8 +7,7 @@ import java.util.stream.IntStream;
 
 /**
  * Represents the link from a {@link Client} to the replicas
- * which will dispatch {@link ClientRequest}s and receive
- * {@link ClientReply}s.
+ * which will dispatch {@link ClientRequest}s.
  *
  * @param <T> the type of transmissible data that represents
  *            encoded messages
@@ -62,13 +61,4 @@ public interface ClientTransport<T> {
      * @param request the encoded request message
      */
     void multicastRequest(T request);
-
-    /**
-     * Called by a user-implemented message listener which
-     * will then notify the {@link Client} of a received
-     * reply from a replica.
-     *
-     * @param reply the encoded reply message
-     */
-    void recvReply(T reply);
 }

@@ -5,34 +5,36 @@ import com.gmail.woodyc40.pbft.message.ClientRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class DefaultClientTicket<O, R> implements ClientTicket<O, R> {
-    private final Client<O, R> client;
+    private final Client<O, R, ?> client;
     private final ClientRequest<O> request;
     private final CompletableFuture<R> future = new CompletableFuture<>();
 
-    private long dispatchTime;
-    private final Map<Integer, R> replies = new HashMap<>();
+    private final AtomicLong dispatchTime;
+    private final Map<Integer, R> replies = new ConcurrentHashMap<>();
 
-    public DefaultClientTicket(Client<O, R> client, ClientRequest<O> request) {
+    public DefaultClientTicket(Client<O, R, ?> client, ClientRequest<O> request) {
         this.client = client;
         this.request = request;
-        this.dispatchTime = request.timestamp();
+        this.dispatchTime = new AtomicLong(request.timestamp());
     }
 
     @Override
-    public Client<O, R> client() {
-        return this.client;
+    public <T> Client<O, R, T> client() {
+        return (Client<O, R, T>) this.client;
     }
 
     @Override
     public void updateDispatchTime() {
-        this.dispatchTime = System.currentTimeMillis();
+        this.dispatchTime.set(System.currentTimeMillis());
     }
 
     @Override
     public long dispatchTime() {
-        return this.dispatchTime;
+        return this.dispatchTime.get();
     }
 
     @Override

@@ -5,12 +5,14 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class DefaultReplicaMessageLog implements ReplicaMessageLog {
     private final int bufferThreshold;
 
-    private final Map<TicketKey, ReplicaTicket<?>> tickets = new HashMap<>();
-    private final Deque<ReplicaRequest<?>> buffer = new LinkedList<>();
+    private final Map<TicketKey, ReplicaTicket<?>> tickets = new ConcurrentHashMap<>();
+    private final Deque<ReplicaRequest<?>> buffer = new ConcurrentLinkedDeque<>();
 
     // TODO: replicas remember the last reply message they sent to each client
     // TODO: Set the water marks

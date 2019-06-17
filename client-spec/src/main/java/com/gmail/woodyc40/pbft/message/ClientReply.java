@@ -33,9 +33,10 @@ public interface ClientReply<R> {
      * corresponding {@link ClientRequest}.
      *
      * @param <O> the client operation type
+     * @param <T> the transmissible type used by the client
      * @return the dispatching client
      */
-    <O> Client<O, R> client();
+    <O, T> Client<O, R, T> client();
 
     /**
      * The replica ID number, {@code i}, which tells the
