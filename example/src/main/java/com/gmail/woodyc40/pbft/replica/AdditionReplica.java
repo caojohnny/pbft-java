@@ -102,5 +102,4 @@ public class AdditionReplica extends DefaultReplica<AdditionOperation, AdditionR
             throw new IllegalArgumentException("Unrecognized type: " + type);
         }
     }
-
 }

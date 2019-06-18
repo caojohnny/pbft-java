@@ -10,6 +10,49 @@ cd pbft-java
 mvn install
 ```
 
+# Usage
+
+The majority of *response* logic has been implemented by
+the `Default*` implementation modules. This means that
+given input, the default implementations handles the
+response to those inputs. The user does need  to implement
+a few components in order to correctly use the provided
+implementations.
+
+Sample implementations for the required components can
+be found the `pbft-java-example` module.
+
+#### Clients
+
+- Clients need to implement their own `ClientEncoder` to
+transform the messages into a transmissible format
+    - Encoders handle message signing and MACs
+- Clients also need to implement the `ClientTransport` in
+order for the `Client` to send messages
+- Clients need to implement their own incoming message
+handlers that both decode the message and decide which
+hooks to call - the required hook is 
+`Client#recvReply(...)`
+- Client users should call `Client#checkTimeout(...)` in
+a loop after sending requests in order to ensure liveness
+
+#### Replicas
+
+- Replicas need to implement their own `ReplicaEncoder` to
+transform the messages into a transmissible format
+    - Encoders handle message signing and MACs
+- Replicas need to implement `ReplicaTransport` in order
+for the `Replica` to send messages
+- Replicas need to implement their own incoming message
+handlers that both decode and decide which hooks to call -
+the required hooks are:
+  - `#recvRequest(...)`
+  - `#recvPrePrepare(...)`
+  - `#recvPrepare(...)`
+  - `#recvCommit(...)`
+- Replicas need to implement their own `Digesters` if
+needed
+
 # Demo
 
 A primitive implementation of the PBFT protocol using Redis to
