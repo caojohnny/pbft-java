@@ -8,7 +8,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-// TODO: Handle out-of-order message delivery
 public class DefaultReplicaMessageLog implements ReplicaMessageLog {
     private final int bufferThreshold;
 
@@ -32,8 +31,8 @@ public class DefaultReplicaMessageLog implements ReplicaMessageLog {
     }
 
     @Override
-    public @NonNull <O> ReplicaTicket<O> newTicket(int viewNumber, long seqNumber, ReplicaRequest<O> request) {
-        ReplicaTicket<O> ticket = new DefaultReplicaTicket<>(viewNumber, seqNumber, request);
+    public @NonNull <O> ReplicaTicket<O> newTicket(int viewNumber, long seqNumber) {
+        ReplicaTicket<O> ticket = new DefaultReplicaTicket<>(viewNumber, seqNumber);
 
         TicketKey key = new TicketKey(viewNumber, seqNumber);
         this.tickets.put(key, ticket);

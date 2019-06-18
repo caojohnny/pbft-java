@@ -28,13 +28,11 @@ public interface ReplicaMessageLog {
      *
      * @param viewNumber the view number
      * @param seqNumber the sequence number
-     * @param request the requested operation for which the
-     *                ticket represents
      * @param <O> the requested operation type
      * @return the new ticket
      */
     @NonNull
-    <O> ReplicaTicket<O> newTicket(int viewNumber, long seqNumber, ReplicaRequest<O> request);
+    <O> ReplicaTicket<O> newTicket(int viewNumber, long seqNumber);
 
     /**
      * Removes the ticket for the pending request with the

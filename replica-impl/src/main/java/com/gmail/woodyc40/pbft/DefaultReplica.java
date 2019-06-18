@@ -63,15 +63,17 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
         int currentViewNumber = this.transport.viewNumber();
         long seqNumber = this.seqCounter.getAndIncrement();
 
-        ReplicaTicket<O> ticket = this.log.newTicket(currentViewNumber, seqNumber, request);
+        ReplicaTicket<O> ticket = this.log.newTicket(currentViewNumber, seqNumber);
         ticket.append(request);
 
-        ReplicaPrePrepare<O> message = new DefaultReplicaPrePrepare<>(
+        ReplicaPrePrepare<O> prePrepare = new DefaultReplicaPrePrepare<>(
                 currentViewNumber,
                 seqNumber,
                 this.digester.digest(request),
                 request);
-        this.sendPrePrepare(message);
+        this.sendPrePrepare(prePrepare);
+
+        ticket.append(prePrepare);
     }
 
     @Override
@@ -127,7 +129,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
                 }
             }
         } else {
-            ticket = this.log.newTicket(currentViewNumber, seqNumber, request);
+            ticket = this.log.newTicket(currentViewNumber, seqNumber);
         }
 
         byte[] computedDigest = this.digester.digest(request);
@@ -155,29 +157,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
 
     @Override
     public void recvPrepare(ReplicaPrepare prepare) {
-        if (!this.verifyPhaseMessage(prepare)) {
-            return;
-        }
-
-        int currentViewNumber = this.transport.viewNumber();
-        long seqNumber = prepare.seqNumber();
-
-        ReplicaTicket<O> ticket = this.log.getTicket(currentViewNumber, seqNumber);
-        if (ticket == null) {
-            return;
-        }
-
-        ticket.append(prepare);
-        if (ticket.isPrepared(this.tolerance)) {
-            ReplicaCommit commit = new DefaultReplicaCommit(
-                    currentViewNumber,
-                    seqNumber,
-                    prepare.digest(),
-                    this.replicaId);
-            this.sendCommit(commit);
-
-            ticket.append(commit);
-        }
+        this.tryAdvanceState(prepare);
     }
 
     @Override
@@ -188,33 +168,57 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
 
     @Override
     public void recvCommit(ReplicaCommit commit) {
-        if (!this.verifyPhaseMessage(commit)) {
+        this.tryAdvanceState(commit);
+    }
+
+    private void tryAdvanceState(ReplicaPhaseMessage message) {
+        if (!this.verifyPhaseMessage(message)) {
             return;
         }
 
-        int currentViewNumber = this.transport.viewNumber();
-        long seqNumber = commit.seqNumber();
+        int currentViewNumber = message.viewNumber();
+        long seqNumber = message.seqNumber();
+        byte[] digest = message.digest();
+
 
         ReplicaTicket<O> ticket = this.log.getTicket(currentViewNumber, seqNumber);
         if (ticket == null) {
-            return;
+            ticket = this.log.newTicket(currentViewNumber, seqNumber);
         }
 
-        ticket.append(commit);
-        if (ticket.isCommittedLocal(this.tolerance)) {
-            ReplicaRequest<O> request = ticket.request();
-            R result = this.compute(request.operation());
+        ticket.append(message);
 
-            String clientId = request.clientId();
-            ReplicaReply<R> reply = new DefaultReplicaReply<>(
-                    currentViewNumber,
-                    request.timestamp(),
-                    clientId,
-                    this.replicaId,
-                    result);
+        ReplicaTicketPhase phase = ticket.phase();
+        if (phase == ReplicaTicketPhase.PRE_PREPARE) {
+            if (ticket.isPrepared(this.tolerance) && ticket.casPhase(phase, ReplicaTicketPhase.PREPARE)) {
+                ReplicaCommit commit = new DefaultReplicaCommit(
+                        currentViewNumber,
+                        seqNumber,
+                        digest,
+                        this.replicaId);
+                this.sendCommit(commit);
 
-            this.log.deleteTicket(currentViewNumber, seqNumber);
-            this.sendReply(clientId, reply);
+                ticket.append(commit);
+            }
+        }
+
+        phase = ticket.phase();
+        if (phase == ReplicaTicketPhase.PREPARE) {
+            if (ticket.isCommittedLocal(this.tolerance) && ticket.casPhase(phase, ReplicaTicketPhase.COMMIT)) {
+                ReplicaRequest<O> request = ticket.request();
+                R result = this.compute(request.operation());
+
+                String clientId = request.clientId();
+                ReplicaReply<R> reply = new DefaultReplicaReply<>(
+                        currentViewNumber,
+                        request.timestamp(),
+                        clientId,
+                        this.replicaId,
+                        result);
+
+                this.log.deleteTicket(currentViewNumber, seqNumber);
+                this.sendReply(clientId, reply);
+            }
         }
     }
 

@@ -60,6 +60,23 @@ public interface ReplicaTicket<O> {
     boolean isCommittedLocal(int tolerance);
 
     /**
+     * Obtains the current ticket phase.
+     *
+     * @return the current phase
+     */
+    ReplicaTicketPhase phase();
+
+    /**
+     * Performs a compare-and-set operation on the phase
+     * of the ticket.
+     *
+     * @param old the old phase
+     * @param next the next phase
+     * @return {@code true} if the operation succeeded
+     */
+    boolean casPhase(ReplicaTicketPhase old, ReplicaTicketPhase next);
+
+    /**
      * Obtains a collection of the messages pertaining to
      * the same operation referenced by this ticket.
      *

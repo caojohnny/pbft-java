@@ -13,38 +13,87 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
 public class Main {
     private static final int TOLERANCE = 1;
-    private static final long TIMEOUT_MS = 50000;
+    private static final long TIMEOUT_MS = 500;
     private static final int REPLICA_COUNT = 3 * TOLERANCE + 1;
 
-    public static void main(String[] args) {
+    private static final Map<String, JedisPubSub> activeListeners = new HashMap<>();
+
+    public static void main(String[] args) throws InterruptedException {
         try (JedisPool pool = new JedisPool()) {
             setupReplicas(pool);
 
+            // Wait for PubSub listeners to setup
+            Thread.sleep(1000);
+
+            Set<ClientTicket<AdditionOperation, AdditionResult>> tickets = new HashSet<>();
+
             Client<AdditionOperation, AdditionResult, String> client = setupClient(pool);
-            AdditionOperation operation = new AdditionOperation(1, 1);
-            ClientTicket<AdditionOperation, AdditionResult> ticket = client.sendRequest(operation);
+            for (int i = 1; i <= 1; i++) {
+                AdditionOperation operation = new AdditionOperation(i, i);
+                ClientTicket<AdditionOperation, AdditionResult> ticket = client.sendRequest(operation);
+                tickets.add(ticket);
 
-            CompletableFuture<AdditionResult> future = ticket.result();
-            future.thenAccept(result -> System.out.println("Result: " + result.result()));
+                ticket.result().thenAccept(result -> {
+                    synchronized (System.out) {
+                        System.out.println("==========================");
+                        System.out.println("==========================");
+                        System.out.println(operation.first() + " + " + operation.second() + " = " + result.result());
+                        System.out.println("==========================");
+                        System.out.println("==========================");
+                    }
+                });
+            }
 
-            while (true) {
-                try {
-                    Thread.sleep(determineSleepTime(ticket));
-                } catch (InterruptedException e) {
-                    break;
+            waitCompletion(client, tickets);
+            shutdown();
+        }
+    }
+
+    private static long determineSleepTime(ClientTicket<?, ?> ticket) {
+        long start = ticket.dispatchTime();
+        long elapsed = System.currentTimeMillis() - start;
+        return Math.max(0, TIMEOUT_MS - elapsed);
+    }
+
+    private static <O, R, T> void waitCompletion(Client<O, R, T> client, Collection<ClientTicket<O, R>> tickets) {
+        int completed = 0;
+        while (true) {
+            long smallestTime = Long.MAX_VALUE;
+            for (ClientTicket<O, R> ticket : tickets) {
+                long sleepTime = determineSleepTime(ticket);
+                if (sleepTime < smallestTime) {
+                    smallestTime = sleepTime;
                 }
 
-                if (future.isDone()) {
+                if (ticket.result().isDone()) {
+                    completed++;
                     break;
                 }
 
                 client.checkTimeout(ticket);
             }
+
+            if (completed == tickets.size()) {
+                break;
+            }
+
+            try {
+                Thread.sleep(smallestTime);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+    }
+
+    private static void shutdown() {
+        for (Entry<String, JedisPubSub> entry : activeListeners.entrySet()) {
+            entry.getValue().unsubscribe(entry.getKey());
         }
     }
 
@@ -63,16 +112,20 @@ public class Main {
                     replicaEncoder,
                     digester,
                     replicaTransport,
-                    false);
+                    i == 0);
             new Thread(() -> {
                 try (Jedis jedis = pool.getResource()) {
-                    readyLatch.countDown();
-                    jedis.subscribe(new JedisPubSub() {
+                    String channel = "replica-" + replica.replicaId();
+                    JedisPubSub listener = new JedisPubSub() {
                         @Override
                         public void onMessage(String channel, String message) {
                             replica.handleIncomingMessage(message);
                         }
-                    }, "replica-" + replica.replicaId());
+                    };
+                    activeListeners.put(channel, listener);
+
+                    readyLatch.countDown();
+                    jedis.subscribe(listener, channel);
                 }
             }).start();
         }
@@ -97,13 +150,17 @@ public class Main {
         CountDownLatch readyLatch = new CountDownLatch(1);
         new Thread(() -> {
             try (Jedis jedis = pool.getResource()) {
-                readyLatch.countDown();
-                jedis.subscribe(new JedisPubSub() {
+                String channel = client.clientId();
+                JedisPubSub listener = new JedisPubSub() {
                     @Override
                     public void onMessage(String channel, String message) {
                         client.handleIncomingMessage(message);
                     }
-                }, client.clientId());
+                };
+                activeListeners.put(channel, listener);
+
+                readyLatch.countDown();
+                jedis.subscribe(listener, channel);
             }
         }).start();
 
@@ -113,11 +170,5 @@ public class Main {
         }
 
         return client;
-    }
-
-    private static long determineSleepTime(ClientTicket<AdditionOperation, AdditionResult> ticket) {
-        long start = ticket.dispatchTime();
-        long elapsed = System.currentTimeMillis() - start;
-        return Math.max(0, TIMEOUT_MS - elapsed);
     }
 }
