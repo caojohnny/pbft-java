@@ -48,8 +48,10 @@ public interface ReplicaTransport<T> {
      * response to a request.
      *
      * @param data the encoded preprepare message
+     * @param ignoredReplicas the replicas to ignored in
+     *                        the multicast operation
      */
-    void multicast(T data);
+    void multicast(T data, int... ignoredReplicas);
 
     /**
      * Sends a reply message to the client with the given

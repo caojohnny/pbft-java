@@ -4,6 +4,8 @@ import com.gmail.woodyc40.pbft.ReplicaTransport;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 public class AdditionReplicaTransport implements ReplicaTransport<String> {
@@ -38,6 +40,8 @@ public class AdditionReplicaTransport implements ReplicaTransport<String> {
 
     @Override
     public void sendMessage(int replicaId, String data) {
+        System.out.println(String.format("Replica SEND -> %d: %s", replicaId, data));
+
         String channel = toChannel(replicaId);
         try (Jedis jedis = this.pool.getResource()) {
             jedis.publish(channel, data);
@@ -45,14 +49,23 @@ public class AdditionReplicaTransport implements ReplicaTransport<String> {
     }
 
     @Override
-    public void multicast(String data) {
+    public void multicast(String data, int... ignoredReplicas) {
+        Set<Integer> ignored = new HashSet<>(ignoredReplicas.length);
+        for (int id : ignoredReplicas) {
+            ignored.add(id);
+        }
+
         for (int i = 0; i < this.replicas; i++) {
-            this.sendMessage(i, data);
+            if (!ignored.contains(i)) {
+                this.sendMessage(i, data);
+            }
         }
     }
 
     @Override
     public void sendReply(String clientId, String reply) {
+        System.out.println(String.format("Replica SEND -> %s: %s", clientId, reply));
+
         try (Jedis jedis = this.pool.getResource()) {
             jedis.publish(clientId, reply);
         }

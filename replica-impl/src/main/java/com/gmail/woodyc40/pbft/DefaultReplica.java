@@ -88,7 +88,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
     @Override
     public void sendPrePrepare(ReplicaPrePrepare<O> prePrepare) {
         T encodedPrePrepare = this.encoder.encodePrePrepare(prePrepare);
-        this.transport.multicast(encodedPrePrepare);
+        this.transport.multicast(encodedPrePrepare, this.replicaId);
     }
 
     private boolean verifyPhaseMessage(ReplicaPhaseMessage message) {
@@ -99,11 +99,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
         }
 
         long seqNumber = message.seqNumber();
-        if (!this.log.isBetweenWaterMarks(seqNumber)) {
-            return false;
-        }
-
-        return true;
+        return this.log.isBetweenWaterMarks(seqNumber);
     }
 
     @Override
@@ -154,7 +150,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
     @Override
     public void sendPrepare(ReplicaPrepare prepare) {
         T encodedPrepare = this.encoder.encodePrepare(prepare);
-        this.transport.multicast(encodedPrepare);
+        this.transport.multicast(encodedPrepare, this.replicaId);
     }
 
     @Override
@@ -168,7 +164,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
 
         ReplicaTicket<O> ticket = this.log.getTicket(currentViewNumber, seqNumber);
         if (ticket == null) {
-            throw new IllegalStateException("Received PREPARE in the incorrect order");
+            return;
         }
 
         ticket.append(prepare);
@@ -187,7 +183,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
     @Override
     public void sendCommit(ReplicaCommit commit) {
         T encodedCommit = this.encoder.encodeCommit(commit);
-        this.transport.multicast(encodedCommit);
+        this.transport.multicast(encodedCommit, this.replicaId);
     }
 
     @Override
@@ -201,7 +197,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
 
         ReplicaTicket<O> ticket = this.log.getTicket(currentViewNumber, seqNumber);
         if (ticket == null) {
-            throw new IllegalStateException("Received COMMIT in the incorrect order");
+            return;
         }
 
         ticket.append(commit);

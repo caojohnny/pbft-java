@@ -10,4 +10,19 @@ public class AdditionResult {
     public int result() {
         return this.result;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || this.getClass() != o.getClass()) return false;
+
+        AdditionResult that = (AdditionResult) o;
+
+        return this.result == that.result;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.result;
+    }
 }

@@ -19,7 +19,7 @@ public class DefaultClientTicket<O, R> implements ClientTicket<O, R> {
     public DefaultClientTicket(Client<O, R, ?> client, ClientRequest<O> request) {
         this.client = client;
         this.request = request;
-        this.dispatchTime = new AtomicLong(request.timestamp());
+        this.dispatchTime = new AtomicLong(System.currentTimeMillis());
     }
 
     @Override

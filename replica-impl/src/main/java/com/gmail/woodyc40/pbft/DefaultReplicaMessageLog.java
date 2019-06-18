@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+// TODO: Handle out-of-order message delivery
 public class DefaultReplicaMessageLog implements ReplicaMessageLog {
     private final int bufferThreshold;
 

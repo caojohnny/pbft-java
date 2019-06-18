@@ -13,6 +13,7 @@ public class AdditionClientEncoder implements ClientEncoder<AdditionOperation, S
         String clientId = request.client().clientId();
 
         JsonObject root = new JsonObject();
+        root.addProperty("type", "REQUEST");
         JsonObject operation = new JsonObject();
         operation.addProperty("first", op.first());
         operation.addProperty("second", op.second());

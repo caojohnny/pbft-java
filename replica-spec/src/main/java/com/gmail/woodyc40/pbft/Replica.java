@@ -9,7 +9,7 @@ import com.gmail.woodyc40.pbft.message.*;
  * <p>Users are required to call the following methods:
  *   - {@link #recvRequest(ReplicaRequest)}
  *   - {@link #recvPrePrepare(ReplicaPrePrepare)}
- *   - {@link #recvRequest(ReplicaRequest)}
+ *   - {@link #recvPrepare(ReplicaPrepare)}
  *   - {@link #recvCommit(ReplicaCommit)}</p>
  *
  * @param <O> the operation type

@@ -43,6 +43,8 @@ public class AdditionClientTransport implements ClientTransport<String> {
 
     @Override
     public void sendRequest(int replicaId, String request) {
+        System.out.println(String.format("Client SEND -> %d: %s", replicaId, request));
+
         String channel = toChannel(replicaId);
         try (Jedis jedis = this.pool.getResource()) {
             jedis.publish(channel, request);
@@ -52,7 +54,7 @@ public class AdditionClientTransport implements ClientTransport<String> {
     @Override
     public void multicastRequest(String request) {
         for (int i = 0; i < this.replicas; i++) {
-            this.sendRequest(this.replicas, request);
+            this.sendRequest(i, request);
         }
     }
 }
