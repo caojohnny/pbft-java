@@ -85,34 +85,18 @@ public class DefaultReplicaTicket<O> implements ReplicaTicket<O> {
 
     @Override
     public boolean isCommittedLocal(int tolerance) {
-        ReplicaPrePrepare<O> prePrepare = null;
-        for (Object message : this.messages) {
-            if (message instanceof ReplicaPrePrepare) {
-                prePrepare = (ReplicaPrePrepare<O>) message;
-                break;
-            }
-        }
-
-        if (prePrepare == null) {
-            return false;
-        }
-
-        final int requiredMatches = 2 * tolerance;
+        // this is checked after the PREPARE phase is
+        // chcked in DefaultReplica so it is safe to
+        // assume that {@code prepareed} is true
         final int requiredCommits = 2 * tolerance + 1;
-        int matchingPrepares = 0;
         int commits = 0;
         for (Object message : this.messages) {
-            if (message instanceof ReplicaPrepare) {
-                ReplicaPrepare prepare = (ReplicaPrepare) message;
-                if (this.matchesPrePrepare(prePrepare, prepare)) {
-                    matchingPrepares++;
-                }
-            } else if (message instanceof ReplicaCommit) {
+            if (message instanceof ReplicaCommit) {
                 commits++;
             }
         }
 
-        return matchingPrepares >= requiredMatches && commits >= requiredCommits;
+        return commits >= requiredCommits;
     }
 
     @Override

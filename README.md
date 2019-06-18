@@ -2,6 +2,48 @@
 
 A Practical Byzantine Fault Tolerance (PBFT) emulator built in Java.
 
+# Implementation
+
+For the most part, the implementation of the PBFT protocol
+attempts to follow the original document as closely as
+possible. However, there are many places where I am simply
+too stupid to comprehend what is going on in the protocol,
+and there may be a few deviations from the standard.
+
+In the default implementations, clients are allowed to send
+asynchronous requests. Clients implement a ticketing system
+whereby requests are assigned a ticket and placed into an
+internal table, which will allow lookups based on the
+timestamp of the original request. Because requests may be
+sent quickly, timestamps begin at 0 and count up instead of
+using the system clock for simplicity. Clients check on the
+reply status of a ticket in an infinite loop, as long as
+timeouts continue to occur, clients will continue to
+multicast the same request to all replicas. Clients accept
+a quorum of `f + 1` replies, and future replies from the
+remaining nodes are ignored.
+
+In the default implementations, replicas are allowed to
+handle asynchronous requests. The message logging style
+also uses a ticketing system, whereby operations that
+are pending are identified by view number and the assigned
+sequence number. Tickets are phased rather than the entire
+replica. All messages received as well as sent are added to
+the respective ticket. Replicas check for prepared state as
+well as committed-local state each time a phase-pertinent
+message is sent (`PRE-PREPARE`, `PREPARE`, or `COMMIT`),
+and thus these messages are allowed to arrive out-of-order.
+Replicas are allowed to send a `PREPARE` or `COMMIT`
+message only once to cut down on traffic. Cryptography,
+such as digesting, MACs, and message signing are not
+specified, and implementors are allowed to not verify those
+if desired. Replicas become prepared as soon as the
+`2f`th matching `PREPARE` message arrives, and become 
+committed-local as soon as the `2f + 1`th matching 
+`COMMIT` arrives. Because these conditions only occur once,
+future phase messages are ignored if the condition they are
+changing are already true.
+
 # Building
 
 ``` shell

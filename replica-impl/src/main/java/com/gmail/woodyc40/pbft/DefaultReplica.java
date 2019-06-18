@@ -1,6 +1,7 @@
 package com.gmail.woodyc40.pbft;
 
 import com.gmail.woodyc40.pbft.message.*;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
@@ -147,6 +148,8 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
         this.sendPrepare(prepare);
 
         ticket.append(prepare);
+
+        this.tryAdvanceState(ticket, prePrepare);
     }
 
     @Override
@@ -157,7 +160,11 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
 
     @Override
     public void recvPrepare(ReplicaPrepare prepare) {
-        this.tryAdvanceState(prepare);
+        ReplicaTicket<O> ticket = this.recvPhaseMessage(prepare);
+
+        if (ticket != null) {
+            this.tryAdvanceState(ticket, prepare);
+        }
     }
 
     @Override
@@ -168,18 +175,20 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
 
     @Override
     public void recvCommit(ReplicaCommit commit) {
-        this.tryAdvanceState(commit);
+        ReplicaTicket<O> ticket = this.recvPhaseMessage(commit);
+
+        if (ticket != null) {
+            this.tryAdvanceState(ticket, commit);
+        }
     }
 
-    private void tryAdvanceState(ReplicaPhaseMessage message) {
+    private @Nullable ReplicaTicket<O> recvPhaseMessage(ReplicaPhaseMessage message) {
         if (!this.verifyPhaseMessage(message)) {
-            return;
+            return null;
         }
 
         int currentViewNumber = message.viewNumber();
         long seqNumber = message.seqNumber();
-        byte[] digest = message.digest();
-
 
         ReplicaTicket<O> ticket = this.log.getTicket(currentViewNumber, seqNumber);
         if (ticket == null) {
@@ -187,6 +196,13 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
         }
 
         ticket.append(message);
+        return ticket;
+    }
+
+    private void tryAdvanceState(ReplicaTicket<O> ticket, ReplicaPhaseMessage message) {
+        int currentViewNumber = message.viewNumber();
+        long seqNumber = message.seqNumber();
+        byte[] digest = message.digest();
 
         ReplicaTicketPhase phase = ticket.phase();
         if (phase == ReplicaTicketPhase.PRE_PREPARE) {
