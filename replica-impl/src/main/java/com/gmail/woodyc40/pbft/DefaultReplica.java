@@ -232,7 +232,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
                         this.replicaId,
                         result);
 
-                this.log.deleteTicket(currentViewNumber, seqNumber);
+                this.log.completeTicket(currentViewNumber, seqNumber);
                 this.sendReply(clientId, reply);
             }
         }

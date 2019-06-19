@@ -60,4 +60,28 @@ public interface ReplicaEncoder<O, R, T> {
      * @return the encoded reply message
      */
     T encodeReply(ReplicaReply<R> reply);
+
+    /**
+     * Encodes the given checkpoint message.
+     *
+     * @param checkpoint the checkpoint message
+     * @return the encoded checkpoint message
+     */
+    T encodeCheckpoint(ReplicaCheckpoint checkpoint);
+
+    /**
+     * Encodes the given view change message.
+     *
+     * @param viewChange the view change message
+     * @return the encoded view change message
+     */
+    T encodeViewChange(ReplicaViewChange viewChange);
+
+    /**
+     * Encodes the new view message.
+     *
+     * @param newView the new view message
+     * @return the encoded new view message
+     */
+    T encodeNewView(ReplicaNewView newView);
 }

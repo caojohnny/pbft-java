@@ -10,7 +10,10 @@ import com.gmail.woodyc40.pbft.message.*;
  *   - {@link #recvRequest(ReplicaRequest)}
  *   - {@link #recvPrePrepare(ReplicaPrePrepare)}
  *   - {@link #recvPrepare(ReplicaPrepare)}
- *   - {@link #recvCommit(ReplicaCommit)}</p>
+ *   - {@link #recvCommit(ReplicaCommit)}
+ *   - {@link #recvCheckpoint(ReplicaCheckpoint)}
+ *   - {@link #recvViewChange(ReplicaViewChange)}
+ *   - {@link #recvNewView(ReplicaNewView)}</p>
  *
  * @param <O> the operation type
  * @param <R> the result type of the operation
@@ -41,7 +44,7 @@ public interface Replica<O, R, T> {
     ReplicaMessageLog log();
 
     /**
-     * Called by the replica {@link ReplicaTransport} to indicate
+     * Called by the replica user to indicate
      * that a PBFT {@code REQUEST} has been received.
      *
      * @param request the received request message
@@ -67,7 +70,7 @@ public interface Replica<O, R, T> {
     void sendPrePrepare(ReplicaPrePrepare<O> prePrepare);
 
     /**
-     * Called by the replica {@link ReplicaTransport} to indicate
+     * Called by the replica user to indicate
      * that a PBFT {@code PRE-PREPARE} message has been
      * multicasted by the primary to this replica.
      *
@@ -84,7 +87,7 @@ public interface Replica<O, R, T> {
     void sendPrepare(ReplicaPrepare prepare);
 
     /**
-     * Called by the replica {@link ReplicaTransport} to indicate
+     * Called by the replica user to indicate
      * that a PBFT {@code PREPARE} message has been
      * received from another replica.
      *
@@ -102,7 +105,7 @@ public interface Replica<O, R, T> {
     void sendCommit(ReplicaCommit commit);
 
     /**
-     * Called by the replica {@link ReplicaTransport} to indicate
+     * Called by the user to indicate
      * that the source replica has entered the prepared
      * phase and that a PBFT {@code COMMIT} message was
      * received by this replica as a result.
@@ -120,6 +123,65 @@ public interface Replica<O, R, T> {
      * @param reply the message to send
      */
     void sendReply(String clientId, ReplicaReply<R> reply);
+
+    /**
+     * Called by the replica user to indicate that a PBFT
+     * {@code CHECKPOINT} message has been received.
+     *
+     * @param checkpoint the message
+     */
+    void recvCheckpoint(ReplicaCheckpoint checkpoint);
+
+    /**
+     * Sends a PBFT {@code CHECKPONT} message to other
+     * replicas to notify them that this replica has
+     * reached a stable checkpoint.
+     *
+     * @param checkpoint the message to send
+     */
+    void sendCheckpoint(ReplicaCheckpoint checkpoint);
+
+    /**
+     * Called by users to indicate that a PBFT
+     * {@code VIEW-CHANGE} message has been received.
+     *
+     * @param viewChange the message
+     */
+    void recvViewChange(ReplicaViewChange viewChange);
+
+    /**
+     * Sends a PBFT {@code VIEW-CHANGE} to all replicas
+     * upon operation timeout.
+     *
+     * @param viewChange the message to send
+     */
+    void sendViewChange(ReplicaViewChange viewChange);
+
+    /**
+     * Called by users to indicate that a PBFT
+     * {@code NEW-VIEW} message has been received and
+     * the replica should switch to a new view.
+     *
+     * @param newView
+     */
+    void recvNewView(ReplicaNewView newView);
+
+    /**
+     * Sends a PBFT {@code NEW-VIEW} message to indicate
+     * that a consensus has been reached to switch to a
+     * new view.
+     *
+     * @param viewChange the message
+     */
+    void sendNewView(ReplicaViewChange viewChange);
+
+    /**
+     * Produces a digest of the current replica state in
+     * order for other replicas to verify its status.
+     *
+     * @return the digest of the currentstate
+     */
+    byte[] digestState();
 
     /**
      * Performs the computation signified by the object

@@ -33,6 +33,7 @@ the respective ticket. Replicas check for prepared state as
 well as committed-local state each time a phase-pertinent
 message is sent (`PRE-PREPARE`, `PREPARE`, or `COMMIT`),
 and thus these messages are allowed to arrive out-of-order.
+Replicas execute all requested operations synchronously.
 Replicas are allowed to send a `PREPARE` or `COMMIT`
 message only once to cut down on traffic. Cryptography,
 such as digesting, MACs, and message signing are not
@@ -49,7 +50,7 @@ changing are already true.
 ``` shell
 git clone https://github.com/AgentTroll/pbft-java.git
 cd pbft-java
-mvn install
+mvn clean install
 ```
 
 # Usage
@@ -92,6 +93,9 @@ the required hooks are:
   - `#recvPrePrepare(...)`
   - `#recvPrepare(...)`
   - `#recvCommit(...)`
+  - `#recvCheckpoint(...)`
+  - `#recvViewChange(...)`
+  - `#recvNewView(...)`
 - Replicas need to implement their own `Digesters` if
 needed
 

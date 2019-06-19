@@ -1,5 +1,6 @@
 package com.gmail.woodyc40.pbft;
 
+import com.gmail.woodyc40.pbft.message.ReplicaCheckpoint;
 import com.gmail.woodyc40.pbft.message.ReplicaRequest;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -9,6 +10,16 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * to organize pending operations from client requests.
  */
 public interface ReplicaMessageLog {
+    /**
+     * Obtains an already completed ticket from the cached
+     * tickets in this log.
+     *
+     * @param timestamp the timestamp of the request
+     * @param <O> the requested operation type
+     * @return the cached ticket
+     */
+    <O> ReplicaTicket<O> getTicketFromCache(long timestamp);
+
     /**
      * Obtains a pending request in the given view with the
      * given sequence number.
@@ -36,14 +47,25 @@ public interface ReplicaMessageLog {
 
     /**
      * Removes the ticket for the pending request with the
-     * given view and sequence numbers.
+     * given view and sequence numbers and stores it until
+     * a checkpoint consensus has been reached.
      *
      * @param viewNumber the view number
      * @param seqNumber the sequence number
      * @return {@code ture} if a request was successfully
      * removed
      */
-    boolean deleteTicket(int viewNumber, long seqNumber);
+    boolean completeTicket(int viewNumber, long seqNumber);
+
+    /**
+     * Adds the checkpoint message to the log, clearing the
+     * necessary state if a consensus is reached.
+     *
+     * @param checkpoint the checkpoint message to add
+     */
+    void recvCheckpoint(ReplicaCheckpoint checkpoint);
+
+    // TODO: View changes
 
     /**
      * Determines whether or not to buffer the next request

@@ -41,7 +41,7 @@ public class DefaultReplicaMessageLog implements ReplicaMessageLog {
     }
 
     @Override
-    public boolean deleteTicket(int viewNumber, long seqNumber) {
+    public boolean completeTicket(int viewNumber, long seqNumber) {
         TicketKey key = new TicketKey(viewNumber, seqNumber);
         return this.tickets.remove(key) != null;
     }
