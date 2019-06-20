@@ -13,16 +13,15 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 public class Main {
     private static final int TOLERANCE = 1;
     private static final long TIMEOUT_MS = 500;
     private static final int REPLICA_COUNT = 3 * TOLERANCE + 1;
-
-    private static final Map<String, JedisPubSub> activeListeners = new HashMap<>();
 
     public static void main(String[] args) throws InterruptedException {
         try (JedisPool pool = new JedisPool()) {
@@ -51,7 +50,6 @@ public class Main {
             }
 
             waitCompletion(client, tickets);
-            shutdown();
         }
     }
 
@@ -73,7 +71,7 @@ public class Main {
 
                 if (ticket.result().isDone()) {
                     completed++;
-                    break;
+                    continue;
                 }
 
                 client.checkTimeout(ticket);
@@ -91,16 +89,10 @@ public class Main {
         }
     }
 
-    private static void shutdown() {
-        for (Entry<String, JedisPubSub> entry : activeListeners.entrySet()) {
-            entry.getValue().unsubscribe(entry.getKey());
-        }
-    }
-
     private static void setupReplicas(JedisPool pool) {
         CountDownLatch readyLatch = new CountDownLatch(REPLICA_COUNT);
         for (int i = 0; i < REPLICA_COUNT; i++) {
-            DefaultReplicaMessageLog log = new DefaultReplicaMessageLog(100, 100);
+            DefaultReplicaMessageLog log = new DefaultReplicaMessageLog(100, 100, 200);
             AdditionReplicaEncoder replicaEncoder = new AdditionReplicaEncoder();
             NoopDigester digester = new NoopDigester();
             AdditionReplicaTransport replicaTransport = new AdditionReplicaTransport(pool, REPLICA_COUNT);
@@ -113,7 +105,7 @@ public class Main {
                     digester,
                     replicaTransport,
                     i == 0);
-            new Thread(() -> {
+            Thread thread = new Thread(() -> {
                 try (Jedis jedis = pool.getResource()) {
                     String channel = "replica-" + replica.replicaId();
                     JedisPubSub listener = new JedisPubSub() {
@@ -122,12 +114,13 @@ public class Main {
                             replica.handleIncomingMessage(message);
                         }
                     };
-                    activeListeners.put(channel, listener);
 
                     readyLatch.countDown();
                     jedis.subscribe(listener, channel);
                 }
-            }).start();
+            });
+            thread.setDaemon(true);
+            thread.start();
         }
 
         try {
@@ -148,7 +141,7 @@ public class Main {
                 clientTransport);
 
         CountDownLatch readyLatch = new CountDownLatch(1);
-        new Thread(() -> {
+        Thread thread = new Thread(() -> {
             try (Jedis jedis = pool.getResource()) {
                 String channel = client.clientId();
                 JedisPubSub listener = new JedisPubSub() {
@@ -157,12 +150,13 @@ public class Main {
                         client.handleIncomingMessage(message);
                     }
                 };
-                activeListeners.put(channel, listener);
 
                 readyLatch.countDown();
                 jedis.subscribe(listener, channel);
             }
-        }).start();
+        });
+        thread.setDaemon(true);
+        thread.start();
 
         try {
             readyLatch.await();

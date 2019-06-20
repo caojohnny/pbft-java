@@ -6,24 +6,31 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
+// TODO: Use timeouts
 public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
+    private static final byte[] EMPTY_DIGEST = new byte[0];
+
     private final int replicaId;
     private final int tolerance;
+    private final long timeout;
     private final ReplicaMessageLog log;
     private final ReplicaEncoder<O, R, T> encoder;
     private final ReplicaDigester<O> digester;
     private final ReplicaTransport<T> transport;
 
+    private volatile int viewNumber;
     private final AtomicLong seqCounter = new AtomicLong();
 
     public DefaultReplica(int replicaId,
                           int tolerance,
+                          long timeout,
                           ReplicaMessageLog log,
                           ReplicaEncoder<O, R, T> encoder,
                           ReplicaDigester<O> digester,
                           ReplicaTransport<T> transport) {
         this.replicaId = replicaId;
         this.tolerance = tolerance;
+        this.timeout = timeout;
         this.log = log;
         this.encoder = encoder;
         this.digester = digester;
@@ -41,11 +48,47 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
     }
 
     @Override
+    public long timeoutMs() {
+        return this.timeout;
+    }
+
+    @Override
     public ReplicaMessageLog log() {
         return this.log;
     }
 
-    private void recvRequest(ReplicaRequest<O> request, boolean buffered) {
+    @Override
+    public void setViewNumber(int newViewNumber) {
+        this.viewNumber = newViewNumber;
+    }
+
+    @Override
+    public int viewNumber() {
+        return this.viewNumber;
+    }
+
+    private void resendReply(String clientId, ReplicaTicket<O, R> ticket) {
+        ticket.result().thenAccept(result -> {
+            ReplicaReply<R> reply = new DefaultReplicaReply<>(
+                    ticket.viewNumber(),
+                    ticket.request().timestamp(),
+                    clientId,
+                    this.replicaId,
+                    result);
+            this.sendReply(clientId, reply);
+        });
+    }
+
+    private void recvRequest(ReplicaRequest<O> request, boolean wasRequestBuffered) {
+        long timestamp = request.timestamp();
+        ReplicaTicket<O, R> cachedTicket = this.log.getTicketFromCache(timestamp);
+        if (cachedTicket != null) {
+            String clientId = request.clientId();
+            this.resendReply(clientId, cachedTicket);
+
+            return;
+        }
+
         int primaryId = this.getPrimaryId();
 
         // We are not the primary replica, redirect
@@ -54,17 +97,17 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
             return;
         }
 
-        if (!buffered) {
+        if (!wasRequestBuffered) {
             if (this.log.shouldBuffer()) {
                 this.log.buffer(request);
                 return;
             }
         }
 
-        int currentViewNumber = this.transport.viewNumber();
+        int currentViewNumber = this.viewNumber;
         long seqNumber = this.seqCounter.getAndIncrement();
 
-        ReplicaTicket<O> ticket = this.log.newTicket(currentViewNumber, seqNumber);
+        ReplicaTicket<O, R> ticket = this.log.newTicket(currentViewNumber, seqNumber);
         ticket.append(request);
 
         ReplicaPrePrepare<O> prePrepare = new DefaultReplicaPrePrepare<>(
@@ -95,7 +138,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
     }
 
     private boolean verifyPhaseMessage(ReplicaPhaseMessage message) {
-        int currentViewNumber = this.transport.viewNumber();
+        int currentViewNumber = this.viewNumber;
         int viewNumber = message.viewNumber();
         if (currentViewNumber != viewNumber) {
             return false;
@@ -111,12 +154,12 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
             return;
         }
 
-        int currentViewNumber = this.transport.viewNumber();
+        int currentViewNumber = this.viewNumber;
         byte[] digest = prePrepare.digest();
         ReplicaRequest<O> request = prePrepare.request();
         long seqNumber = prePrepare.seqNumber();
 
-        ReplicaTicket<O> ticket = this.log.getTicket(currentViewNumber, seqNumber);
+        ReplicaTicket<O, R> ticket = this.log.getTicket(currentViewNumber, seqNumber);
         if (ticket != null) {
             for (Object message : ticket.messages()) {
                 if (!(message instanceof ReplicaPrePrepare)) {
@@ -160,7 +203,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
 
     @Override
     public void recvPrepare(ReplicaPrepare prepare) {
-        ReplicaTicket<O> ticket = this.recvPhaseMessage(prepare);
+        ReplicaTicket<O, R> ticket = this.recvPhaseMessage(prepare);
 
         if (ticket != null) {
             this.tryAdvanceState(ticket, prepare);
@@ -175,14 +218,14 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
 
     @Override
     public void recvCommit(ReplicaCommit commit) {
-        ReplicaTicket<O> ticket = this.recvPhaseMessage(commit);
+        ReplicaTicket<O, R> ticket = this.recvPhaseMessage(commit);
 
         if (ticket != null) {
             this.tryAdvanceState(ticket, commit);
         }
     }
 
-    private @Nullable ReplicaTicket<O> recvPhaseMessage(ReplicaPhaseMessage message) {
+    private @Nullable ReplicaTicket<O, R> recvPhaseMessage(ReplicaPhaseMessage message) {
         if (!this.verifyPhaseMessage(message)) {
             return null;
         }
@@ -190,7 +233,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
         int currentViewNumber = message.viewNumber();
         long seqNumber = message.seqNumber();
 
-        ReplicaTicket<O> ticket = this.log.getTicket(currentViewNumber, seqNumber);
+        ReplicaTicket<O, R> ticket = this.log.getTicket(currentViewNumber, seqNumber);
         if (ticket == null) {
             ticket = this.log.newTicket(currentViewNumber, seqNumber);
         }
@@ -199,7 +242,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
         return ticket;
     }
 
-    private void tryAdvanceState(ReplicaTicket<O> ticket, ReplicaPhaseMessage message) {
+    private void tryAdvanceState(ReplicaTicket<O, R> ticket, ReplicaPhaseMessage message) {
         int currentViewNumber = message.viewNumber();
         long seqNumber = message.seqNumber();
         byte[] digest = message.digest();
@@ -234,6 +277,15 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
 
                 this.log.completeTicket(currentViewNumber, seqNumber);
                 this.sendReply(clientId, reply);
+
+                if (seqNumber % this.log.checkpointInterval() == 0) {
+                    ReplicaCheckpoint checkpoint = new DefaultReplicaCheckpoint(
+                            seqNumber,
+                            this.digestState(),
+                            this.replicaId);
+                    this.sendCheckpoint(checkpoint);
+                    this.log.appendCheckpoint(checkpoint, this.tolerance);
+                }
             }
         }
     }
@@ -254,6 +306,61 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
     }
 
     @Override
+    public void recvCheckpoint(ReplicaCheckpoint checkpoint) {
+        this.log.appendCheckpoint(checkpoint, this.tolerance);
+    }
+
+    @Override
+    public void sendCheckpoint(ReplicaCheckpoint checkpoint) {
+        T encodedCheckpoint = this.encoder.encodeCheckpoint(checkpoint);
+        this.transport.multicast(encodedCheckpoint, this.replicaId);
+    }
+
+    @Override
+    public void recvViewChange(ReplicaViewChange viewChange) {
+        int newViewNumber = viewChange.newViewNumber();
+        int newPrimaryId = getPrimaryId(newViewNumber, this.transport.countKnownReplicas());
+
+        // We're not the new primary
+        if (newPrimaryId != this.replicaId) {
+            return;
+        }
+
+        this.log.appendViewChange(viewChange);
+
+        if (this.log.produceNewView(newViewNumber, this.tolerance)) {
+
+
+            new DefaultReplicaNewView(
+                    newViewNumber,
+                    )
+
+            this.viewNumber = newViewNumber;
+        }
+    }
+
+    @Override
+    public void sendViewChange(ReplicaViewChange viewChange) {
+        T encodedViewChange = this.encoder.encodeViewChange(viewChange);
+        this.transport.multicast(encodedViewChange, this.replicaId);
+    }
+
+    @Override
+    public void recvNewView(ReplicaNewView newView) {
+    }
+
+    @Override
+    public void sendNewView(ReplicaNewView newView) {
+        T encodedNewView = this.encoder.encodeNewView(newView);
+        this.transport.multicast(encodedNewView, this.replicaId);
+    }
+
+    @Override
+    public byte[] digestState() {
+        return EMPTY_DIGEST;
+    }
+
+    @Override
     public ReplicaEncoder<O, R, T> encoder() {
         return this.encoder;
     }
@@ -268,7 +375,11 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
         return this.transport;
     }
 
+    private static int getPrimaryId(int viewNumber, int knownReplicas) {
+        return viewNumber % knownReplicas;
+    }
+
     private int getPrimaryId() {
-        return this.transport.viewNumber() % this.transport.countKnownReplicas();
+        return getPrimaryId(this.viewNumber, this.transport.countKnownReplicas());
     }
 }

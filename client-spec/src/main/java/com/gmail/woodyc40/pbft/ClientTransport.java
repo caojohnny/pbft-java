@@ -1,6 +1,5 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.ClientReply;
 import com.gmail.woodyc40.pbft.message.ClientRequest;
 
 import java.util.stream.IntStream;
@@ -13,22 +12,6 @@ import java.util.stream.IntStream;
  *            encoded messages
  */
 public interface ClientTransport<T> {
-    /**
-     * Sets the primary ID based on the view number found
-     * in the {@link ClientReply} message.
-     *
-     * @param primaryId the new primary ID
-     */
-    void setPrimaryId(int primaryId);
-
-    /**
-     * Obtains the ID number of what is currently believed
-     * to be the primary replica.
-     *
-     * @return the probable primary ID
-     */
-    int primaryId();
-
     /**
      * Obtains an {@link IntStream} populated with the known
      * replica ID numbers.

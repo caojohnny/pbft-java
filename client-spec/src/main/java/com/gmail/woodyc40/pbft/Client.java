@@ -47,6 +47,23 @@ public interface Client<O, R, T> {
     long timeoutMs();
 
     /**
+     * Sets the primary ID based on the view number found
+     * in the {@link ClientReply} message.
+     *
+     * @param primaryId the new primary ID
+     */
+    void setPrimaryId(int primaryId);
+
+    /**
+     * Obtains the ID number of what is currently believed
+     * to be the primary replica.
+     *
+     * @return the probable primary ID
+     */
+    int primaryId();
+
+
+    /**
      * Sends a request for the given {@code request} to be
      * completed by replica state machines.
      *

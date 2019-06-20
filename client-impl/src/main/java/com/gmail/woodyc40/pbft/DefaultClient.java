@@ -17,6 +17,7 @@ public class DefaultClient<O, R, T> implements Client<O, R, T> {
     private final ClientEncoder<O, T> codec;
     private final ClientTransport<T> transport;
 
+    private volatile int primaryId;
     private final AtomicLong timestampCounter = new AtomicLong();
     private final Map<Long, ClientTicket<O, R>> tickets = new ConcurrentHashMap<>();
 
@@ -47,6 +48,16 @@ public class DefaultClient<O, R, T> implements Client<O, R, T> {
         return this.timeoutMs;
     }
 
+    @Override
+    public void setPrimaryId(int primaryId) {
+        this.primaryId = primaryId;
+    }
+
+    @Override
+    public int primaryId() {
+        return this.primaryId;
+    }
+
     private long nextTimestamp() {
         return this.timestampCounter.getAndIncrement();
     }
@@ -56,9 +67,8 @@ public class DefaultClient<O, R, T> implements Client<O, R, T> {
         long timestamp = this.nextTimestamp();
         ClientRequest<O> req = new DefaultClientRequest<>(operation, timestamp, this);
 
-        int primaryId = this.transport.primaryId();
         T encodedRequest = this.codec.encodeRequest(req);
-        this.transport.sendRequest(primaryId, encodedRequest);
+        this.transport.sendRequest(this.primaryId, encodedRequest);
 
         ClientTicket<O, R> ticket = new DefaultClientTicket<>(this, req);
         this.tickets.put(timestamp, ticket);
@@ -92,8 +102,7 @@ public class DefaultClient<O, R, T> implements Client<O, R, T> {
         }
 
         int viewNumber = reply.viewNumber();
-        int primaryId = viewNumber % this.transport.countKnownReplicas();
-        this.transport.setPrimaryId(primaryId);
+        this.primaryId = viewNumber % this.transport.countKnownReplicas();
 
         int replicaId = reply.replicaId();
         R result = reply.result();

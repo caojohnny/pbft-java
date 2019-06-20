@@ -12,16 +12,9 @@ public class AdditionReplicaTransport implements ReplicaTransport<String> {
     private final JedisPool pool;
     private final int replicas;
 
-    private int viewNumber;
-
     public AdditionReplicaTransport(JedisPool pool, int replicas) {
         this.pool = pool;
         this.replicas = replicas;
-    }
-
-    @Override
-    public int viewNumber() {
-        return this.viewNumber;
     }
 
     @Override

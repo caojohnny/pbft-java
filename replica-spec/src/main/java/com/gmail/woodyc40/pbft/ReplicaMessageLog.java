@@ -1,7 +1,9 @@
 package com.gmail.woodyc40.pbft;
 
 import com.gmail.woodyc40.pbft.message.ReplicaCheckpoint;
+import com.gmail.woodyc40.pbft.message.ReplicaNewView;
 import com.gmail.woodyc40.pbft.message.ReplicaRequest;
+import com.gmail.woodyc40.pbft.message.ReplicaViewChange;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -11,14 +13,33 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface ReplicaMessageLog {
     /**
+     * Obtains the interval between sequence numbers for
+     * which this replica will generate checkpoints.
+     *
+     * @return the modulo to generate checkpoints
+     */
+    int checkpointInterval();
+
+    /**
+     * The width between water marks, {@code k}. Each time
+     * a checkpoint becomes stable, the range shifts
+     * forward by {@link #watermarkInterval()}.
+     *
+     * @return the width of the water mark range
+     */
+    int watermarkInterval();
+
+    /**
      * Obtains an already completed ticket from the cached
      * tickets in this log.
      *
      * @param timestamp the timestamp of the request
      * @param <O> the requested operation type
+     * @param <R> the requested result type
      * @return the cached ticket
      */
-    <O> ReplicaTicket<O> getTicketFromCache(long timestamp);
+    @Nullable
+    <O, R> ReplicaTicket<O, R> getTicketFromCache(long timestamp);
 
     /**
      * Obtains a pending request in the given view with the
@@ -27,11 +48,12 @@ public interface ReplicaMessageLog {
      * @param viewNumber the view number
      * @param seqNumber the sequence number
      * @param <O> the requested operation type
+     * @param <R> the requested result type
      * @return the ticket, or {@code null} if no ticket
      *         exists
      */
     @Nullable
-    <O> ReplicaTicket<O> getTicket(int viewNumber, long seqNumber);
+    <O, R> ReplicaTicket<O, R> getTicket(int viewNumber, long seqNumber);
 
     /**
      * Creates a new ticket in the given view number with
@@ -40,10 +62,11 @@ public interface ReplicaMessageLog {
      * @param viewNumber the view number
      * @param seqNumber the sequence number
      * @param <O> the requested operation type
+     * @param <R> the requested result type
      * @return the new ticket
      */
     @NonNull
-    <O> ReplicaTicket<O> newTicket(int viewNumber, long seqNumber);
+    <O, R> ReplicaTicket<O, R> newTicket(int viewNumber, long seqNumber);
 
     /**
      * Removes the ticket for the pending request with the
@@ -52,7 +75,7 @@ public interface ReplicaMessageLog {
      *
      * @param viewNumber the view number
      * @param seqNumber the sequence number
-     * @return {@code ture} if a request was successfully
+     * @return {@code true} if a request was successfully
      * removed
      */
     boolean completeTicket(int viewNumber, long seqNumber);
@@ -62,10 +85,42 @@ public interface ReplicaMessageLog {
      * necessary state if a consensus is reached.
      *
      * @param checkpoint the checkpoint message to add
+     * @param tolerance the number of faulty nodes the
+     *                  state machine system is capable
+     *                  of tolerating, {@code f}
      */
-    void recvCheckpoint(ReplicaCheckpoint checkpoint);
+    void appendCheckpoint(ReplicaCheckpoint checkpoint, int tolerance);
 
-    // TODO: View changes
+    /**
+     * Adds a view change message to the log.
+     *
+     * @param viewChange the message to add
+     */
+    void appendViewChange(ReplicaViewChange viewChange);
+
+    /**
+     * Checks to see if the message log indicates that
+     * enough {@link ReplicaViewChange} messages have been
+     * received to constitute a quorum to change into a new
+     * view.
+     *
+     * @param newViewNumber the new view to check for
+     *                      quorum
+     * @param tolerance the number of faulty nodes the
+     *                  state machine system is capable
+     *                  of tolerating, {@code f}
+     * @return a non-null {@link ReplicaNewView} message if
+     * a quorum of replicas agree to change views
+     */
+    @Nullable
+    ReplicaNewView produceNewView(int newViewNumber, int tolerance);
+
+    /**
+     * Adds a new view message to the log.
+     *
+     * @param newView the message to add
+     */
+    void appendNewView(ReplicaNewView newView);
 
     /**
      * Determines whether or not to buffer the next request

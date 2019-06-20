@@ -3,6 +3,7 @@ package com.gmail.woodyc40.pbft;
 import com.gmail.woodyc40.pbft.message.ReplicaRequest;
 
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Represents a pending request operation that is awaiting
@@ -10,7 +11,7 @@ import java.util.Collection;
  *
  * @param <O> the operation type for the request
  */
-public interface ReplicaTicket<O> {
+public interface ReplicaTicket<O, R> {
     /**
      * Obtains the view number in which this ticket was
      * created.
@@ -91,4 +92,12 @@ public interface ReplicaTicket<O> {
      * @return the original request
      */
     ReplicaRequest<O> request();
+
+    /**
+     * A future representing the computed value of the
+     * result.
+     *
+     * @return a future result
+     */
+    CompletableFuture<R> result();
 }

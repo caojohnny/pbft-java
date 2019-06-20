@@ -24,7 +24,7 @@ public interface ReplicaViewChange {
     long lastSeqNumber();
 
     /**
-     * A set of {@code 2f + 1} valid checkpoints messages
+     * A set of {@code 2f + 1} valid checkpoint messages
      * that prove that the {@link #lastSeqNumber()} is
      * valid.
      *

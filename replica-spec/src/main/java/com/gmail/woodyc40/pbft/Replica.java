@@ -36,12 +36,38 @@ public interface Replica<O, R, T> {
     int tolerance();
 
     /**
+     * The number of milliseconds that elapses from when
+     * a request is received by this client and a timeout
+     * occurs to send a view change vote.
+     *
+     * @return the number of milliseconds to acheive
+     * a timeout
+     */
+    long timeoutMs();
+
+    /**
      * Obtains this {@link Replica}'s message log as
      * specified in the PBFT algorithm;
      *
      * @return the message log
      */
     ReplicaMessageLog log();
+
+    /**
+     * Sets the new view number upon the acceptance of a
+     * {@link ReplicaNewView} message.
+     *
+     * @param newViewNumber the new view to enter into
+     */
+    void setViewNumber(int newViewNumber);
+
+    /**
+     * Obtains the current view number, used to determine
+     * the primary ID number.
+     *
+     * @return the current view number
+     */
+    int viewNumber();
 
     /**
      * Called by the replica user to indicate
@@ -171,9 +197,9 @@ public interface Replica<O, R, T> {
      * that a consensus has been reached to switch to a
      * new view.
      *
-     * @param viewChange the message
+     * @param newView the message
      */
-    void sendNewView(ReplicaViewChange viewChange);
+    void sendNewView(ReplicaNewView newView);
 
     /**
      * Produces a digest of the current replica state in

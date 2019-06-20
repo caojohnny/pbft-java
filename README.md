@@ -189,3 +189,4 @@ Uses [GSON](https://github.com/google/gson) and [Jedis](https://github.com/xetor
   - [Practical BFT](https://courses.cs.washington.edu/courses/csep552/13sp/lectures/10/pbft.pdf)
   - [Practical Byzantine Fault Tolerance](http://www.scs.stanford.edu/14au-cs244b/notes/pbft.txt)
   - [Distributed Algorithms Practical Byzantine Fault Tolerance](https://disi.unitn.it/~montreso/ds/handouts17/10-pbft.pdf)
+  - [PBFT Presentation](https://courses.cs.vt.edu/~cs5204/fall05-gback/presentations/PBFT.pdf)

@@ -8,16 +8,18 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class DefaultReplicaTicket<O> implements ReplicaTicket<O> {
+public class DefaultReplicaTicket<O, R> implements ReplicaTicket<O, R> {
     private final int viewNumber;
     private final long seqNumber;
     private final Collection<Object> messages = new ConcurrentLinkedQueue<>();
 
     private volatile ReplicaRequest<O> request;
     private final AtomicReference<ReplicaTicketPhase> phase = new AtomicReference<>(ReplicaTicketPhase.PRE_PREPARE);
+    private final CompletableFuture<R> future = new CompletableFuture<>();
 
     public DefaultReplicaTicket(int viewNumber, long seqNumber) {
         this.viewNumber = viewNumber;
@@ -53,29 +55,29 @@ public class DefaultReplicaTicket<O> implements ReplicaTicket<O> {
 
     @Override
     public boolean isPrepared(int tolerance) {
-        ReplicaPrePrepare<O> prePrepare = null;
-        for (Object message : this.messages) {
-            if (message instanceof ReplicaPrePrepare) {
-                prePrepare = (ReplicaPrePrepare<O>) message;
-                break;
-            }
-        }
-
-        if (prePrepare == null) {
-            return false;
-        }
-
         final int requiredMatches = 2 * tolerance;
-        int matchingPrepares = 0;
-        for (Object message : this.messages) {
-            if (message instanceof ReplicaPrepare) {
-                ReplicaPrepare prepare = (ReplicaPrepare) message;
-                if (this.matchesPrePrepare(prePrepare, prepare)) {
-                    matchingPrepares++;
 
-                    if (matchingPrepares == requiredMatches) {
-                        return true;
-                    }
+        for (Object prePrepareObject : this.messages) {
+            if (!(prePrepareObject instanceof ReplicaPrePrepare)) {
+                continue;
+            }
+
+            ReplicaPrePrepare<O> prePrepare = (ReplicaPrePrepare<O>) prePrepareObject;
+
+            int matchingPrepares = 0;
+            for (Object prepareObject : this.messages) {
+                if (!(prepareObject instanceof ReplicaPrepare)) {
+                    continue;
+                }
+
+                ReplicaPrepare prepare = (ReplicaPrepare) prepareObject;
+                if (!this.matchesPrePrepare(prePrepare, prepare)) {
+                    continue;
+                }
+
+                matchingPrepares++;
+                if (matchingPrepares == requiredMatches) {
+                    return true;
                 }
             }
         }
@@ -117,5 +119,10 @@ public class DefaultReplicaTicket<O> implements ReplicaTicket<O> {
     @Override
     public @Nullable ReplicaRequest<O> request() {
         return this.request;
+    }
+
+    @Override
+    public CompletableFuture<R> result() {
+        return this.future;
     }
 }

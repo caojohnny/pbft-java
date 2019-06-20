@@ -1,7 +1,5 @@
 package com.gmail.woodyc40.pbft;
 
-import com.gmail.woodyc40.pbft.message.ReplicaNewView;
-
 import java.util.stream.IntStream;
 
 /**
@@ -11,22 +9,6 @@ import java.util.stream.IntStream;
  * @param <T> the encoded message type
  */
 public interface ReplicaTransport<T> {
-    /**
-     * Sets the new view number upon the acceptance of a
-     * {@link ReplicaNewView} message.
-     *
-     * @param newViewNumber the new view to enter into
-     */
-    void setViewNumber(int newViewNumber);
-
-    /**
-     * Obtains the current view number, used to determine
-     * the primary ID number.
-     *
-     * @return the current view number
-     */
-    int viewNumber();
-
     /**
      * Obtains the number of replicas known by the
      * transport layer.

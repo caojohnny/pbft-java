@@ -10,21 +10,9 @@ public class AdditionClientTransport implements ClientTransport<String> {
     private final JedisPool pool;
     private final int replicas;
 
-    private int primaryId;
-
     public AdditionClientTransport(JedisPool pool, int replicas) {
         this.pool = pool;
         this.replicas = replicas;
-    }
-
-    @Override
-    public void setPrimaryId(int primaryId) {
-        this.primaryId = primaryId;
-    }
-
-    @Override
-    public int primaryId() {
-        return this.primaryId;
     }
 
     @Override

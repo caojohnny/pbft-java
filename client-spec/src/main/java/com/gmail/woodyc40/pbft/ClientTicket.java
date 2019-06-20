@@ -27,7 +27,7 @@ public interface ClientTicket<O, R> {
 
     /**
      * Sets the dispatch time to
-     * {@link System#currentTimeMillis()}}
+     * {@link System#currentTimeMillis()}
      */
     void updateDispatchTime();
 
