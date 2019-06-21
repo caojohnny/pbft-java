@@ -78,6 +78,8 @@ hooks to call - the required hook is
 `Client#recvReply(...)`
 - Client users should call `Client#checkTimeout(...)` in
 a loop after sending requests in order to ensure liveness
+- Operations implemented by the client should implement
+`equals` and `hashCode`
 
 #### Replicas
 
@@ -103,6 +105,8 @@ the required hooks are:
   - `#recvNewView(...)`
 - Replicas need to implement their own `Digesters` if
 needed
+- Replicas need to call `#checkTimeout(...)` in a loop to
+ensure that client timeouts cause view changes as needed
 
 # Demo
 

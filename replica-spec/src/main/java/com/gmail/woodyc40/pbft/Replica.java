@@ -2,6 +2,8 @@ package com.gmail.woodyc40.pbft;
 
 import com.gmail.woodyc40.pbft.message.*;
 
+import java.util.Collection;
+
 /**
  * Represents a replicated state-machine in the PBFT
  * algorithm.
@@ -13,7 +15,11 @@ import com.gmail.woodyc40.pbft.message.*;
  * - {@link #recvCommit(ReplicaCommit)}
  * - {@link #recvCheckpoint(ReplicaCheckpoint)}
  * - {@link #recvViewChange(ReplicaViewChange)}
- * - {@link #recvNewView(ReplicaNewView)}</p>
+ * - {@link #recvNewView(ReplicaNewView)}
+ *
+ * In addition, users are also expected to call
+ * {@link #checkTimeout(ReplicaRequestKey)} in a loop in
+ * order to maintain liveness.</p>
  *
  * @param <O> the operation type
  * @param <R> the result type of the operation
@@ -91,6 +97,29 @@ public interface Replica<O, R, T> {
      * waiting for a view change to occur
      */
     boolean isDisgruntled();
+
+    /**
+     * Obtains a collection of requests that have active
+     * timers started.
+     *
+     * @return a collection of requests that have started
+     * timeout timers
+     */
+    Collection<ReplicaRequestKey> activeTimers();
+
+    /**
+     * Checks to see whether the given active timer
+     * represented by the request key has timed out,
+     * appropriately sending a view change message if so.
+     *
+     * <p>A timeout occurs when {@link #isDisgruntled()}
+     * changes from {@code false} to {@code true} after
+     * calling this method.</p>
+     *
+     * @param key the request to check
+     * @return the time to wait
+     */
+    long checkTimeout(ReplicaRequestKey key);
 
     /**
      * Called by the replica user to indicate

@@ -33,13 +33,13 @@ public interface ReplicaMessageLog {
      * Obtains an already completed ticket from the cached
      * tickets in this log.
      *
+     * @param clientId  the client that the ticket served
      * @param timestamp the timestamp of the request
      * @param <O>       the requested operation type
      * @param <R>       the requested result type
      * @return the cached ticket
      */
-    @Nullable
-    <O, R> ReplicaTicket<O, R> getTicketFromCache(long timestamp);
+    @Nullable <O, R> ReplicaTicket<O, R> getTicketFromCache(String clientId, long timestamp);
 
     /**
      * Obtains a pending request in the given view with the
@@ -52,8 +52,7 @@ public interface ReplicaMessageLog {
      * @return the ticket, or {@code null} if no ticket
      * exists
      */
-    @Nullable
-    <O, R> ReplicaTicket<O, R> getTicket(int viewNumber, long seqNumber);
+    @Nullable <O, R> ReplicaTicket<O, R> getTicket(int viewNumber, long seqNumber);
 
     /**
      * Creates a new ticket in the given view number with
@@ -65,8 +64,7 @@ public interface ReplicaMessageLog {
      * @param <R>        the requested result type
      * @return the new ticket
      */
-    @NonNull
-    <O, R> ReplicaTicket<O, R> newTicket(int viewNumber, long seqNumber);
+    @NonNull <O, R> ReplicaTicket<O, R> newTicket(int viewNumber, long seqNumber);
 
     /**
      * Removes the ticket for the pending request with the
@@ -107,11 +105,17 @@ public interface ReplicaMessageLog {
     ReplicaViewChange produceViewChange(int newViewNumber, int replicaId, int tolerance);
 
     /**
-     * Adds a view change message to the log.
+     * Processes a view change message, adding it to the
+     * log and deciding whether or not to bandwagon.
      *
      * @param viewChange the message to add
+     * @param tolerance  the number of faulty nodes the
+     *                   state machine system is capable
+     *                   of tolerating, {@code f}
+     * @return {@code true} if this replica should
+     * bandwagon and also send a view change
      */
-    void appendViewChange(ReplicaViewChange viewChange);
+    boolean acceptViewChange(ReplicaViewChange viewChange, int tolerance);
 
     /**
      * Checks to see if the message log indicates that
@@ -133,9 +137,11 @@ public interface ReplicaMessageLog {
     ReplicaNewView produceNewView(int newViewNumber, int replicaId, int tolerance);
 
     /**
-     * Adds a new view message to the log.
+     * Processes the new view message as it pertains to the
+     * log, such as garbage collection and advancing the
+     * low water mark.
      *
-     * @param newView the message to add
+     * @param newView the message to process
      */
     void acceptNewView(ReplicaNewView newView);
 
@@ -164,8 +170,7 @@ public interface ReplicaMessageLog {
      * @return the buffered request, or {@code null} if the
      * buffer is empty
      */
-    @Nullable
-    <O> ReplicaRequest<O> popBuffer();
+    @Nullable <O> ReplicaRequest<O> popBuffer();
 
     /**
      * Ensures that the given sequence number is between

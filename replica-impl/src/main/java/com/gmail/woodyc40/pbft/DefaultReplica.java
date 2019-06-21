@@ -4,9 +4,12 @@ import com.gmail.woodyc40.pbft.message.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-// TODO: Use timeouts
 public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
     private static final byte[] EMPTY_DIGEST = new byte[0];
 
@@ -21,6 +24,7 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
     private volatile int viewNumber;
     private volatile boolean disgruntled;
     private final AtomicLong seqCounter = new AtomicLong();
+    private final Map<ReplicaRequestKey, ExpBackoff> timeouts = new ConcurrentHashMap<>();
 
     public DefaultReplica(int replicaId,
                           int tolerance,
@@ -78,6 +82,33 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
         return this.disgruntled;
     }
 
+    @Override
+    public Collection<ReplicaRequestKey> activeTimers() {
+        return Collections.unmodifiableCollection(this.timeouts.keySet());
+    }
+
+    @Override
+    public long checkTimeout(ReplicaRequestKey key) {
+        int currentViewNumber = this.viewNumber;
+
+        ExpBackoff backoff = this.timeouts.get(key);
+        long now = System.currentTimeMillis();
+        long elapsed = now - backoff.startTime();
+        if (elapsed >= backoff.timeout()) {
+            int viewDelta = backoff.viewDelta();
+            ReplicaViewChange viewChange = this.log.produceViewChange(
+                    currentViewNumber + viewDelta,
+                    this.replicaId,
+                    this.tolerance);
+            this.sendViewChange(viewChange);
+
+            this.disgruntled = true;
+            backoff.advanceTimeout();
+        }
+
+        return backoff.timeout() - elapsed;
+    }
+
     private void resendReply(String clientId, ReplicaTicket<O, R> ticket) {
         ticket.result().thenAccept(result -> {
             int viewNumber = ticket.viewNumber();
@@ -94,14 +125,16 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
     }
 
     private void recvRequest(ReplicaRequest<O> request, boolean wasRequestBuffered) {
+        String clientId = request.clientId();
         long timestamp = request.timestamp();
-        ReplicaTicket<O, R> cachedTicket = this.log.getTicketFromCache(timestamp);
+        ReplicaTicket<O, R> cachedTicket = this.log.getTicketFromCache(clientId, timestamp);
         if (cachedTicket != null) {
-            String clientId = request.clientId();
             this.resendReply(clientId, cachedTicket);
-
             return;
         }
+
+        ReplicaRequestKey key = new DefaultReplicaRequestKey(clientId, timestamp);
+        this.timeouts.computeIfAbsent(key, k -> new ExpBackoff(this.timeout));
 
         int primaryId = this.getPrimaryId();
 
@@ -292,15 +325,19 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
                     R result = this.compute(operation);
 
                     String clientId = request.clientId();
+                    long timestamp = request.timestamp();
                     ReplicaReply<R> reply = new DefaultReplicaReply<>(
                             currentViewNumber,
-                            request.timestamp(),
+                            timestamp,
                             clientId,
                             this.replicaId,
                             result);
 
                     this.log.completeTicket(currentViewNumber, seqNumber);
                     this.sendReply(clientId, reply);
+
+                    ReplicaRequestKey key = new DefaultReplicaRequestKey(clientId, timestamp);
+                    this.timeouts.remove(key);
                 }
 
                 if (seqNumber % this.log.checkpointInterval() == 0) {
@@ -341,6 +378,12 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
         this.transport.multicast(encodedCheckpoint, this.replicaId);
     }
 
+    private void enterNewView(int newViewNumber) {
+        this.disgruntled = false;
+        this.viewNumber = newViewNumber;
+        this.timeouts.clear();
+    }
+
     @Override
     public void recvViewChange(ReplicaViewChange viewChange) {
         int newViewNumber = viewChange.newViewNumber();
@@ -351,12 +394,16 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
             return;
         }
 
-        this.log.appendViewChange(viewChange);
+        boolean shouldBandwagon = this.log.acceptViewChange(viewChange, this.tolerance);
+        if (shouldBandwagon) {
+            ReplicaViewChange bandwagonViewChange = this.log.produceViewChange(newViewNumber, this.replicaId, this.tolerance);
+            this.sendViewChange(bandwagonViewChange);
+        }
 
         ReplicaNewView newView = this.log.produceNewView(newViewNumber, this.tolerance, this.replicaId);
         if (newView != null) {
             this.sendNewView(newView);
-            this.viewNumber = newViewNumber;
+            this.enterNewView(newViewNumber);
         }
     }
 
@@ -370,27 +417,27 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
     public void recvNewView(ReplicaNewView newView) {
         this.log.acceptNewView(newView);
 
-        long minS = Integer.MAX_VALUE;
         int newViewNumber = newView.newViewNumber();
         for (ReplicaPrePrepare<?> prePrepare : newView.preparedProofs()) {
-            long seqNumber = prePrepare.seqNumber();
-            if (seqNumber < minS) {
-                minS = seqNumber;
+            byte[] digest = prePrepare.digest();
+            ReplicaRequest<O> request = (ReplicaRequest<O>) prePrepare.request();
+            if (!Arrays.equals(digest, this.digester.digest(request))) {
+                continue;
             }
 
+            long seqNumber = prePrepare.seqNumber();
             ReplicaTicket<O, R> ticket = this.log.newTicket(newViewNumber, seqNumber);
             ticket.append(prePrepare);
 
             ReplicaPrepare prepare = new DefaultReplicaPrepare(
                     newViewNumber,
                     seqNumber,
-                    prePrepare.digest(),
+                    digest,
                     this.replicaId);
             this.sendPrepare(prepare);
         }
 
-        this.disgruntled = false;
-        this.viewNumber = newViewNumber;
+        this.enterNewView(newViewNumber);
     }
 
     @Override
@@ -425,5 +472,34 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
 
     private int getPrimaryId() {
         return getPrimaryId(this.viewNumber, this.transport.countKnownReplicas());
+    }
+
+    private static class ExpBackoff {
+        private int viewDelta = 1;
+        private long timeout;
+        private long startTime;
+
+        public ExpBackoff(long timeout) {
+            this.timeout = timeout;
+            this.startTime = System.currentTimeMillis();
+        }
+
+        private void advanceTimeout() {
+            this.viewDelta++;
+            this.timeout <<= 1;
+            this.startTime = System.currentTimeMillis();
+        }
+
+        public int viewDelta() {
+            return this.viewDelta;
+        }
+
+        public long timeout() {
+            return this.timeout;
+        }
+
+        public long startTime() {
+            return this.startTime;
+        }
     }
 }

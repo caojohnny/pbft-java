@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class DefaultReplicaMessageLog implements ReplicaMessageLog {
     private static final byte[] NULL_DIGEST = new byte[0];
-    public static final DefaultReplicaRequest<Object> NULL_REQ = new DefaultReplicaRequest<>(null, 0, "");
+    private static final DefaultReplicaRequest<Object> NULL_REQ = new DefaultReplicaRequest<>(null, 0, "");
 
     private final int bufferThreshold;
     private final int checkpointInterval;
@@ -20,7 +20,7 @@ public class DefaultReplicaMessageLog implements ReplicaMessageLog {
 
     private final Deque<ReplicaRequest<?>> buffer = new ConcurrentLinkedDeque<>();
 
-    private final Map<Long, ReplicaTicket<?, ?>> ticketCache = new ConcurrentHashMap<>();
+    private final Map<ReplicaRequestKey, ReplicaTicket<?, ?>> ticketCache = new ConcurrentHashMap<>();
     private final Map<TicketKey, ReplicaTicket<?, ?>> tickets = new ConcurrentHashMap<>();
 
     private final Map<Long, Collection<ReplicaCheckpoint>> checkpoints = new ConcurrentHashMap<>();
@@ -49,8 +49,9 @@ public class DefaultReplicaMessageLog implements ReplicaMessageLog {
     }
 
     @Override
-    public <O, R> @Nullable ReplicaTicket<O, R> getTicketFromCache(long timestamp) {
-        return (ReplicaTicket<O, R>) this.ticketCache.get(timestamp);
+    public <O, R> @Nullable ReplicaTicket<O, R> getTicketFromCache(String clientId, long timestamp) {
+        ReplicaRequestKey key = new DefaultReplicaRequestKey(clientId, timestamp);
+        return (ReplicaTicket<O, R>) this.ticketCache.get(key);
     }
 
     @Override
@@ -72,7 +73,7 @@ public class DefaultReplicaMessageLog implements ReplicaMessageLog {
     }
 
     private void gcCheckpoint(long checkpoint) {
-        for (Entry<Long, ReplicaTicket<?, ?>> entry : this.ticketCache.entrySet()) {
+        for (Entry<ReplicaRequestKey, ReplicaTicket<?, ?>> entry : this.ticketCache.entrySet()) {
             ReplicaTicket<?, ?> ticket = entry.getValue();
             if (ticket.seqNumber() <= checkpoint) {
                 this.ticketCache.remove(entry.getKey());
@@ -109,8 +110,7 @@ public class DefaultReplicaMessageLog implements ReplicaMessageLog {
         }
     }
 
-    @Nullable
-    private Collection<ReplicaPhaseMessage> selectPreparedProofs(ReplicaTicket<?, ?> ticket, int requiredMatches) {
+    private @Nullable Collection<ReplicaPhaseMessage> selectPreparedProofs(ReplicaTicket<?, ?> ticket, int requiredMatches) {
         Collection<ReplicaPhaseMessage> proof = new ArrayList<>();
         for (Object prePrepareObject : ticket.messages()) {
             if (!(prePrepareObject instanceof ReplicaPrePrepare)) {
@@ -192,12 +192,15 @@ public class DefaultReplicaMessageLog implements ReplicaMessageLog {
     }
 
     @Override
-    public void appendViewChange(ReplicaViewChange viewChange) {
+    public boolean acceptViewChange(ReplicaViewChange viewChange, int tolerance) {
         int newViewNumber = viewChange.newViewNumber();
         int replicaId = viewChange.replicaId();
 
         Map<Integer, ReplicaViewChange> newViewSet = this.viewChanges.computeIfAbsent(newViewNumber, k -> new ConcurrentHashMap<>());
         newViewSet.put(replicaId, viewChange);
+
+        final int bandwagonSize = tolerance + 1;
+        return newViewSet.size() >= bandwagonSize;
     }
 
     private Collection<ReplicaPrePrepare<?>> selectPreparedProofs(int newViewNumber, long minS, long maxS, Map<Long, ReplicaPrePrepare<?>> prePrepareMap) {
@@ -337,7 +340,7 @@ public class DefaultReplicaMessageLog implements ReplicaMessageLog {
         private final int viewNumber;
         private final long seqNumber;
 
-        private TicketKey(int viewNumber, long seqNumber) {
+        public TicketKey(int viewNumber, long seqNumber) {
             this.viewNumber = viewNumber;
             this.seqNumber = seqNumber;
         }

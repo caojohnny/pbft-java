@@ -65,7 +65,7 @@ public class Main {
             long smallestTime = Long.MAX_VALUE;
             for (ClientTicket<O, R> ticket : tickets) {
                 long sleepTime = determineSleepTime(ticket);
-                if (sleepTime < smallestTime) {
+                if (sleepTime > 0 && sleepTime < smallestTime) {
                     smallestTime = sleepTime;
                 }
 
