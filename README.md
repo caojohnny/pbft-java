@@ -84,6 +84,11 @@ a loop after sending requests in order to ensure liveness
 - Replicas need to implement their own `ReplicaEncoder` to
 transform the messages into a transmissible format
     - Encoders handle message signing and MACs
+    - The **default** implementation requires that full
+    messages and checkpoints are encoded for those messages
+    pertaining to view changes, but this can be changed if
+    the user wishes to accommodate for additional messages
+    to retrieve missing information
 - Replicas need to implement `ReplicaTransport` in order
 for the `Replica` to send messages
 - Replicas need to implement their own incoming message
@@ -190,3 +195,7 @@ Uses [GSON](https://github.com/google/gson) and [Jedis](https://github.com/xetor
   - [Practical Byzantine Fault Tolerance](http://www.scs.stanford.edu/14au-cs244b/notes/pbft.txt)
   - [Distributed Algorithms Practical Byzantine Fault Tolerance](https://disi.unitn.it/~montreso/ds/handouts17/10-pbft.pdf)
   - [PBFT Presentation](https://courses.cs.vt.edu/~cs5204/fall05-gback/presentations/PBFT.pdf)
+  - [Practical Byzantine Fault Tolerance](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/01/thesis-mcastro.pdf)
+  - [10.BFT](https://www.cs.utexas.edu/~lorenzo/corsi/cs380d/past/10S/notes/week11.pdf)
+  - [Byzantine Fault Tolerance](http://www.cs.cmu.edu/~srini/15-440-all/2016.Fall/lectures/22-BFT.ppt)
+  - [Practical Byzantine Fault Tolerance ](https://people.eecs.berkeley.edu/~kubitron/courses/cs294-4-F03/slides/lec09-practical.ppt)
