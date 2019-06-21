@@ -1,6 +1,7 @@
 package com.gmail.woodyc40.pbft;
 
 import com.gmail.woodyc40.pbft.message.ReplicaRequest;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -91,6 +92,7 @@ public interface ReplicaTicket<O, R> {
      *
      * @return the original request
      */
+    @Nullable
     ReplicaRequest<O> request();
 
     /**

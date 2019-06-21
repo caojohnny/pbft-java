@@ -11,6 +11,9 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class DefaultReplicaMessageLog implements ReplicaMessageLog {
+    private static final byte[] NULL_DIGEST = new byte[0];
+    public static final DefaultReplicaRequest<Object> NULL_REQ = new DefaultReplicaRequest<>(null, 0, "");
+
     private final int bufferThreshold;
     private final int checkpointInterval;
     private final int watermarkInterval;
@@ -106,6 +109,88 @@ public class DefaultReplicaMessageLog implements ReplicaMessageLog {
         }
     }
 
+    @Nullable
+    private Collection<ReplicaPhaseMessage> selectPreparedProofs(ReplicaTicket<?, ?> ticket, int requiredMatches) {
+        Collection<ReplicaPhaseMessage> proof = new ArrayList<>();
+        for (Object prePrepareObject : ticket.messages()) {
+            if (!(prePrepareObject instanceof ReplicaPrePrepare)) {
+                continue;
+            }
+
+            ReplicaPrePrepare<?> prePrepare = (ReplicaPrePrepare<?>) prePrepareObject;
+            proof.add(prePrepare);
+
+            int matchingPrepares = 0;
+            for (Object prepareObject : ticket.messages()) {
+                if (!(prepareObject instanceof ReplicaPrepare)) {
+                    continue;
+                }
+
+                ReplicaPrepare prepare = (ReplicaPrepare) prepareObject;
+                if (!Arrays.equals(prePrepare.digest(), prepare.digest())) {
+                    continue;
+                }
+
+                matchingPrepares++;
+                proof.add(prepare);
+
+                if (matchingPrepares == requiredMatches) {
+                    return proof;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public ReplicaViewChange produceViewChange(int newViewNumber, int replicaId, int tolerance) {
+        long checkpoint = this.lowWaterMark;
+
+        Collection<ReplicaCheckpoint> checkpointProofs = this.checkpoints.get(checkpoint);
+        if (checkpoint != 0 && checkpointProofs == null) {
+            throw new IllegalStateException("Checkpoint has diverged without any proof");
+        }
+
+        final int requiredMatches = 2 * tolerance;
+        Map<Long, Collection<ReplicaPhaseMessage>> preparedProofs = new HashMap<>();
+        for (ReplicaTicket<?, ?> ticket : this.ticketCache.values()) {
+            long seqNumber = ticket.seqNumber();
+            if (seqNumber > checkpoint) {
+                Collection<ReplicaPhaseMessage> proofs = this.selectPreparedProofs(ticket, requiredMatches);
+                if (proofs == null) {
+                    continue;
+                }
+
+                preparedProofs.put(seqNumber, proofs);
+            }
+        }
+
+        for (ReplicaTicket<?, ?> ticket : this.tickets.values()) {
+            ReplicaTicketPhase phase = ticket.phase();
+            if (phase == ReplicaTicketPhase.PRE_PREPARE) {
+                continue;
+            }
+
+            long seqNumber = ticket.seqNumber();
+            if (seqNumber > checkpoint) {
+                Collection<ReplicaPhaseMessage> proofs = this.selectPreparedProofs(ticket, requiredMatches);
+                if (proofs == null) {
+                    continue;
+                }
+
+                preparedProofs.put(seqNumber, proofs);
+            }
+        }
+
+        return new DefaultReplicaViewChange(
+                newViewNumber,
+                checkpoint,
+                checkpointProofs,
+                preparedProofs,
+                replicaId);
+    }
+
     @Override
     public void appendViewChange(ReplicaViewChange viewChange) {
         int newViewNumber = viewChange.newViewNumber();
@@ -115,41 +200,117 @@ public class DefaultReplicaMessageLog implements ReplicaMessageLog {
         newViewSet.put(replicaId, viewChange);
     }
 
+    private Collection<ReplicaPrePrepare<?>> selectPreparedProofs(int newViewNumber, long minS, long maxS, Map<Long, ReplicaPrePrepare<?>> prePrepareMap) {
+        Collection<ReplicaPrePrepare<?>> sequenceProofs = new ArrayList<>();
+        for (long i = minS; i < maxS; i++) {
+            ReplicaPrePrepare<?> prePrepareProofMessage = prePrepareMap.get(i);
+            if (prePrepareProofMessage == null) {
+                prePrepareProofMessage = new DefaultReplicaPrePrepare<>(
+                        newViewNumber,
+                        i,
+                        NULL_DIGEST,
+                        NULL_REQ);
+            }
+
+            sequenceProofs.add(prePrepareProofMessage);
+
+            ReplicaTicket<Object, Object> ticket = this.newTicket(newViewNumber, i);
+            ticket.append(prePrepareProofMessage);
+        }
+
+        return sequenceProofs;
+    }
+
     @Override
-    public @Nullable ReplicaNewView produceNewView(int newViewNumber, int tolerance) {
+    public @Nullable ReplicaNewView produceNewView(int newViewNumber, int replicaId, int tolerance) {
         Map<Integer, ReplicaViewChange> newViewSet = this.viewChanges.get(newViewNumber);
 
         int count = 0;
         long minS = Long.MAX_VALUE;
         long maxS = Long.MIN_VALUE;
+        Collection<ReplicaCheckpoint> minSProof = null;
+        Map<Long, ReplicaPrePrepare<?>> prePrepareMap = new HashMap<>();
         for (ReplicaViewChange viewChange : newViewSet.values()) {
             count++;
 
             long seqNumber = viewChange.lastSeqNumber();
+            Collection<ReplicaCheckpoint> proofs = viewChange.checkpointProofs();
             if (seqNumber < minS) {
                 minS = seqNumber;
+                minSProof = proofs;
             }
 
             if (seqNumber > maxS) {
                 maxS = seqNumber;
             }
+
+            for (Entry<Long, Collection<ReplicaPhaseMessage>> entry : viewChange.preparedProofs().entrySet()) {
+                long prePrepareSeqNumber = entry.getKey();
+                if (prePrepareSeqNumber > maxS) {
+                    maxS = prePrepareSeqNumber;
+                }
+
+                for (ReplicaPhaseMessage phaseMessage : entry.getValue()) {
+                    if (!(phaseMessage instanceof ReplicaPrePrepare)) {
+                        continue;
+                    }
+
+                    prePrepareMap.put(prePrepareSeqNumber, (ReplicaPrePrepare<?>) phaseMessage);
+                    break;
+                }
+            }
         }
 
         final int quorum = 2 * tolerance;
-        if (count >= quorum) {
-            Collection<ReplicaViewChange> viewChangeProofs = new ArrayList<>(newViewSet.values());
-            // TODO: Figure this out??
+        if (count < quorum) {
+            return null;
         }
 
-        return null;
+        this.gcNewView(newViewNumber);
+        if (minS > this.lowWaterMark) {
+            this.checkpoints.put(minS, minSProof);
+            this.gcCheckpoint(minS);
+        }
+
+        Collection<ReplicaViewChange> viewChangeProofs = new ArrayList<>(newViewSet.values());
+        viewChangeProofs.add(this.produceViewChange(newViewNumber, replicaId, tolerance));
+
+        Collection<ReplicaPrePrepare<?>> preparedProofs = this.selectPreparedProofs(newViewNumber, minS, maxS, prePrepareMap);
+
+        return new DefaultReplicaNewView(
+                newViewNumber,
+                viewChangeProofs,
+                preparedProofs);
     }
 
-    private void gcNewView() {
-        // TODO: Implement
+    private void gcNewView(int newViewNumber) {
+        this.viewChanges.remove(newViewNumber);
+
+        for (TicketKey key : this.tickets.keySet()) {
+            if (key.viewNumber() != newViewNumber) {
+                this.tickets.remove(key);
+            }
+        }
     }
 
     @Override
-    public void appendNewView(ReplicaNewView newView) {
+    public void acceptNewView(ReplicaNewView newView) {
+        this.gcNewView(newView.newViewNumber());
+
+        long minS = Integer.MAX_VALUE;
+        Collection<ReplicaCheckpoint> checkpointProofs = null;
+        for (ReplicaViewChange viewChange : newView.viewChangeProofs()) {
+            long seqNumber = viewChange.lastSeqNumber();
+            if (seqNumber < minS) {
+                minS = seqNumber;
+                checkpointProofs = viewChange.checkpointProofs();
+            }
+        }
+
+        if (minS > this.lowWaterMark) {
+            this.checkpoints.put(minS, checkpointProofs);
+            this.gcCheckpoint(minS);
+        }
     }
 
     @Override
@@ -179,6 +340,10 @@ public class DefaultReplicaMessageLog implements ReplicaMessageLog {
         private TicketKey(int viewNumber, long seqNumber) {
             this.viewNumber = viewNumber;
             this.seqNumber = seqNumber;
+        }
+
+        public int viewNumber() {
+            return this.viewNumber;
         }
 
         @Override

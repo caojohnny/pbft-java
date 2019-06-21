@@ -34,8 +34,8 @@ public interface ReplicaMessageLog {
      * tickets in this log.
      *
      * @param timestamp the timestamp of the request
-     * @param <O> the requested operation type
-     * @param <R> the requested result type
+     * @param <O>       the requested operation type
+     * @param <R>       the requested result type
      * @return the cached ticket
      */
     @Nullable
@@ -46,11 +46,11 @@ public interface ReplicaMessageLog {
      * given sequence number.
      *
      * @param viewNumber the view number
-     * @param seqNumber the sequence number
-     * @param <O> the requested operation type
-     * @param <R> the requested result type
+     * @param seqNumber  the sequence number
+     * @param <O>        the requested operation type
+     * @param <R>        the requested result type
      * @return the ticket, or {@code null} if no ticket
-     *         exists
+     * exists
      */
     @Nullable
     <O, R> ReplicaTicket<O, R> getTicket(int viewNumber, long seqNumber);
@@ -60,9 +60,9 @@ public interface ReplicaMessageLog {
      * the given sequence number.
      *
      * @param viewNumber the view number
-     * @param seqNumber the sequence number
-     * @param <O> the requested operation type
-     * @param <R> the requested result type
+     * @param seqNumber  the sequence number
+     * @param <O>        the requested operation type
+     * @param <R>        the requested result type
      * @return the new ticket
      */
     @NonNull
@@ -74,7 +74,7 @@ public interface ReplicaMessageLog {
      * a checkpoint consensus has been reached.
      *
      * @param viewNumber the view number
-     * @param seqNumber the sequence number
+     * @param seqNumber  the sequence number
      * @return {@code true} if a request was successfully
      * removed
      */
@@ -85,11 +85,26 @@ public interface ReplicaMessageLog {
      * necessary state if a consensus is reached.
      *
      * @param checkpoint the checkpoint message to add
-     * @param tolerance the number of faulty nodes the
-     *                  state machine system is capable
-     *                  of tolerating, {@code f}
+     * @param tolerance  the number of faulty nodes the
+     *                   state machine system is capable
+     *                   of tolerating, {@code f}
      */
     void appendCheckpoint(ReplicaCheckpoint checkpoint, int tolerance);
+
+    /**
+     * Creates a new {@code VIEW-CHANGE} message with the
+     * required fields filled out.
+     *
+     * @param newViewNumber the new view number to vote
+     *                      into
+     * @param replicaId     the replica ID producing the
+     *                      message
+     * @param tolerance     the number of faulty nodes the
+     *                      state machine system is capable
+     *                      of tolerating, {@code f}
+     * @return the new view change message
+     */
+    ReplicaViewChange produceViewChange(int newViewNumber, int replicaId, int tolerance);
 
     /**
      * Adds a view change message to the log.
@@ -106,21 +121,23 @@ public interface ReplicaMessageLog {
      *
      * @param newViewNumber the new view to check for
      *                      quorum
-     * @param tolerance the number of faulty nodes the
-     *                  state machine system is capable
-     *                  of tolerating, {@code f}
+     * @param replicaId     the replica ID of the sending
+     *                      replica
+     * @param tolerance     the number of faulty nodes the
+     *                      state machine system is capable
+     *                      of tolerating, {@code f}
      * @return a non-null {@link ReplicaNewView} message if
      * a quorum of replicas agree to change views
      */
     @Nullable
-    ReplicaNewView produceNewView(int newViewNumber, int tolerance);
+    ReplicaNewView produceNewView(int newViewNumber, int replicaId, int tolerance);
 
     /**
      * Adds a new view message to the log.
      *
      * @param newView the message to add
      */
-    void appendNewView(ReplicaNewView newView);
+    void acceptNewView(ReplicaNewView newView);
 
     /**
      * Determines whether or not to buffer the next request
@@ -136,7 +153,7 @@ public interface ReplicaMessageLog {
      * queue for later handling.
      *
      * @param request the request to buffer
-     * @param <O> the request operation type
+     * @param <O>     the request operation type
      */
     <O> void buffer(ReplicaRequest<O> request);
 

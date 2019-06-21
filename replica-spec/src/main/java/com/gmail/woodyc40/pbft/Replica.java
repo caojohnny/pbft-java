@@ -7,13 +7,13 @@ import com.gmail.woodyc40.pbft.message.*;
  * algorithm.
  *
  * <p>Users are required to call the following methods:
- *   - {@link #recvRequest(ReplicaRequest)}
- *   - {@link #recvPrePrepare(ReplicaPrePrepare)}
- *   - {@link #recvPrepare(ReplicaPrepare)}
- *   - {@link #recvCommit(ReplicaCommit)}
- *   - {@link #recvCheckpoint(ReplicaCheckpoint)}
- *   - {@link #recvViewChange(ReplicaViewChange)}
- *   - {@link #recvNewView(ReplicaNewView)}</p>
+ * - {@link #recvRequest(ReplicaRequest)}
+ * - {@link #recvPrePrepare(ReplicaPrePrepare)}
+ * - {@link #recvPrepare(ReplicaPrepare)}
+ * - {@link #recvCommit(ReplicaCommit)}
+ * - {@link #recvCheckpoint(ReplicaCheckpoint)}
+ * - {@link #recvViewChange(ReplicaViewChange)}
+ * - {@link #recvNewView(ReplicaNewView)}</p>
  *
  * @param <O> the operation type
  * @param <R> the result type of the operation
@@ -70,6 +70,29 @@ public interface Replica<O, R, T> {
     int viewNumber();
 
     /**
+     * Sets whether this replica should pause receiving any
+     * message except for:
+     *   - {@link ReplicaViewChange}
+     *   - {@link ReplicaNewView}
+     *   - {@link ReplicaCheckpoint}
+     * in preparation for a view change.
+     *
+     * @param disgruntled {@code true} if this replica
+     *                    should pause to wait for a view
+     *                    change
+     */
+    void setDisgruntled(boolean disgruntled);
+
+    /**
+     * Checks to see if this replica is currently
+     * "disgurntled" and has sent a vote to change view.
+     *
+     * @return {@code true} if this replica has paused
+     * waiting for a view change to occur
+     */
+    boolean isDisgruntled();
+
+    /**
      * Called by the replica user to indicate
      * that a PBFT {@code REQUEST} has been received.
      *
@@ -83,7 +106,7 @@ public interface Replica<O, R, T> {
      * that the client mistakenly sends.
      *
      * @param replicaId the primary replica ID
-     * @param request the request to redirect
+     * @param request   the request to redirect
      */
     void sendRequest(int replicaId, ReplicaRequest<O> request);
 
@@ -146,7 +169,7 @@ public interface Replica<O, R, T> {
      * of the requested operation result.
      *
      * @param clientId the target client ID String
-     * @param reply the message to send
+     * @param reply    the message to send
      */
     void sendReply(String clientId, ReplicaReply<R> reply);
 

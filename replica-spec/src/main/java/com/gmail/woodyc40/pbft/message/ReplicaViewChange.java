@@ -1,6 +1,7 @@
 package com.gmail.woodyc40.pbft.message;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Represents a PBFT {@code VIEW-CHANGE} message, used by
@@ -39,7 +40,7 @@ public interface ReplicaViewChange {
      *
      * @return a set of proofs prepared phase proofs
      */
-    Collection<Collection<ReplicaPhaseMessage>> preparedProofs();
+    Map<Long, Collection<ReplicaPhaseMessage>> preparedProofs();
 
     /**
      * The replica ID of the replica sending this message.

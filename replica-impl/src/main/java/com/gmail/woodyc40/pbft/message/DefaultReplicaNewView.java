@@ -26,7 +26,7 @@ public class DefaultReplicaNewView implements ReplicaNewView {
     }
 
     @Override
-    public Collection<ReplicaPrePrepare<?>> sequenceProofs() {
+    public Collection<ReplicaPrePrepare<?>> preparedProofs() {
         return this.sequenceProofs;
     }
 }

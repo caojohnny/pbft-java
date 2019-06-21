@@ -1,18 +1,19 @@
 package com.gmail.woodyc40.pbft.message;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class DefaultReplicaViewChange implements ReplicaViewChange {
     private final int newViewNumber;
     private final long lastSeqNumber;
     private final Collection<ReplicaCheckpoint> checkpointProofs;
-    private final Collection<Collection<ReplicaPhaseMessage>> preparedProofs;
+    private final Map<Long, Collection<ReplicaPhaseMessage>> preparedProofs;
     private final int replicaId;
 
     public DefaultReplicaViewChange(int newViewNumber,
                                     long lastSeqNumber,
                                     Collection<ReplicaCheckpoint> checkpointProofs,
-                                    Collection<Collection<ReplicaPhaseMessage>> preparedProofs,
+                                    Map<Long, Collection<ReplicaPhaseMessage>> preparedProofs,
                                     int replicaId) {
         this.newViewNumber = newViewNumber;
         this.lastSeqNumber = lastSeqNumber;
@@ -37,7 +38,7 @@ public class DefaultReplicaViewChange implements ReplicaViewChange {
     }
 
     @Override
-    public Collection<Collection<ReplicaPhaseMessage>> preparedProofs() {
+    public Map<Long, Collection<ReplicaPhaseMessage>> preparedProofs() {
         return this.preparedProofs;
     }
 

@@ -25,10 +25,11 @@ public interface ReplicaNewView {
 
     /**
      * A collection of pre-prepare sequences between the
-     * selected stable sequence numbers.
+     * selected stable sequence numbers proving that the
+     * min-s and max-s requests have been prepared.
      *
      * @return the collection pre-prepare messages known
      * to the new primary
      */
-    Collection<ReplicaPrePrepare<?>> sequenceProofs();
+    Collection<ReplicaPrePrepare<?>> preparedProofs();
 }
