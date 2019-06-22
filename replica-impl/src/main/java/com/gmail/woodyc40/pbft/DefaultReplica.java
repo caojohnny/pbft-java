@@ -92,6 +92,10 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
         int currentViewNumber = this.viewNumber;
 
         ExpBackoff backoff = this.timeouts.get(key);
+        if (backoff == null) {
+            return 0L;
+        }
+
         long now = System.currentTimeMillis();
         long elapsed = now - backoff.startTime();
         if (elapsed >= backoff.timeout()) {
@@ -419,8 +423,15 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
 
         int newViewNumber = newView.newViewNumber();
         for (ReplicaPrePrepare<?> prePrepare : newView.preparedProofs()) {
-            byte[] digest = prePrepare.digest();
             ReplicaRequest<O> request = (ReplicaRequest<O>) prePrepare.request();
+            O operation = request.operation();
+
+            // No-op
+            if (operation == null) {
+                continue;
+            }
+
+            byte[] digest = prePrepare.digest();
             if (!Arrays.equals(digest, this.digester.digest(request))) {
                 continue;
             }

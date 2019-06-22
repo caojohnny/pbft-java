@@ -1,5 +1,7 @@
 package com.gmail.woodyc40.pbft.message;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Represents a request sent by a client in order to
  * initiate a service from the replica.
@@ -12,6 +14,7 @@ public interface ReplicaRequest<O> {
      *
      * @return the operation
      */
+    @Nullable
     O operation();
 
     /**

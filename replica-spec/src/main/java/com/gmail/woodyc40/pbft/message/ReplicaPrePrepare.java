@@ -1,7 +1,5 @@
 package com.gmail.woodyc40.pbft.message;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 /**
  * Represents a PBFT {@code PRE-PREPARE} message.
  *
@@ -14,6 +12,5 @@ public interface ReplicaPrePrepare<O> extends ReplicaPhaseMessage {
      *
      * @return the request message
      */
-    @Nullable
     ReplicaRequest<O> request();
 }

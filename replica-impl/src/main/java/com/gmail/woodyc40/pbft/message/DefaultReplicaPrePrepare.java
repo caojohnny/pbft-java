@@ -1,7 +1,5 @@
 package com.gmail.woodyc40.pbft.message;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 public class DefaultReplicaPrePrepare<O> implements ReplicaPrePrepare<O> {
     private final int viewNumber;
     private final long seqNumber;
@@ -31,7 +29,7 @@ public class DefaultReplicaPrePrepare<O> implements ReplicaPrePrepare<O> {
     }
 
     @Override
-    public @Nullable ReplicaRequest<O> request() {
+    public ReplicaRequest<O> request() {
         return this.request;
     }
 }

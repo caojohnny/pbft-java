@@ -147,8 +147,9 @@ public class DefaultReplicaMessageLog implements ReplicaMessageLog {
     public ReplicaViewChange produceViewChange(int newViewNumber, int replicaId, int tolerance) {
         long checkpoint = this.lowWaterMark;
 
-        Collection<ReplicaCheckpoint> checkpointProofs = this.checkpoints.get(checkpoint);
-        if (checkpoint != 0 && checkpointProofs == null) {
+        Collection<ReplicaCheckpoint> checkpointProofs = checkpoint == 0 ?
+                Collections.emptyList() : this.checkpoints.get(checkpoint);
+        if (checkpointProofs == null) {
             throw new IllegalStateException("Checkpoint has diverged without any proof");
         }
 

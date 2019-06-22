@@ -5,9 +5,15 @@ import com.gmail.woodyc40.pbft.message.*;
 import com.gmail.woodyc40.pbft.type.AdditionOperation;
 import com.gmail.woodyc40.pbft.type.AdditionResult;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class AdditionReplica extends DefaultReplica<AdditionOperation, AdditionResult, String> {
@@ -15,12 +21,13 @@ public class AdditionReplica extends DefaultReplica<AdditionOperation, AdditionR
 
     public AdditionReplica(int replicaId,
                            int tolerance,
+                           long timeout,
                            ReplicaMessageLog log,
                            ReplicaEncoder<AdditionOperation, AdditionResult, String> encoder,
                            ReplicaDigester<AdditionOperation> digester,
                            ReplicaTransport<String> transport,
                            boolean faulty) {
-        super(replicaId, tolerance, log, encoder, digester, transport);
+        super(replicaId, tolerance, timeout, log, encoder, digester, transport);
         this.faulty = faulty;
     }
 
@@ -30,10 +37,14 @@ public class AdditionReplica extends DefaultReplica<AdditionOperation, AdditionR
     }
 
     private static ReplicaRequest<AdditionOperation> readRequest(JsonObject root) {
-        JsonObject operation = root.get("operation").getAsJsonObject();
-        int first = operation.get("first").getAsInt();
-        int second = operation.get("second").getAsInt();
-        AdditionOperation additionOperation = new AdditionOperation(first, second);
+        JsonElement operation = root.get("operation");
+        AdditionOperation additionOperation = null;
+        if (!operation.isJsonNull()) {
+            JsonObject operationObject = operation.getAsJsonObject();
+            int first = operationObject.get("first").getAsInt();
+            int second = operationObject.get("second").getAsInt();
+            additionOperation = new AdditionOperation(first, second);
+        }
         long timestamp = root.get("timestamp").getAsLong();
         String clientId = root.get("client").getAsString();
 
@@ -79,6 +90,77 @@ public class AdditionReplica extends DefaultReplica<AdditionOperation, AdditionR
                 replicaId);
     }
 
+    private static ReplicaCheckpoint readCheckpoint(JsonObject root) {
+        long lastSeqNumber = root.get("last-seq-number").getAsLong();
+        byte[] digest = root.get("digest").getAsString().getBytes(StandardCharsets.UTF_8);
+        int replicaId = root.get("replica-id").getAsInt();
+
+        return new DefaultReplicaCheckpoint(
+                lastSeqNumber,
+                digest,
+                replicaId);
+    }
+
+    private static ReplicaViewChange readViewChange(JsonObject root) {
+        int newViewNumber = root.get("new-view-number").getAsInt();
+        long lastSeqNumber = root.get("last-seq-number").getAsLong();
+
+        Collection<ReplicaCheckpoint> checkpointProofs = new ArrayList<>();
+        JsonArray checkpointProofsArray = root.get("checkpoint-proofs").getAsJsonArray();
+        for (JsonElement checkpoint : checkpointProofsArray) {
+            checkpointProofs.add(readCheckpoint(checkpoint.getAsJsonObject()));
+        }
+
+        Map<Long, Collection<ReplicaPhaseMessage>> preparedProofs = new HashMap<>();
+        JsonArray preparedProofsArray = root.get("prepared-proofs").getAsJsonArray();
+        for (JsonElement element : preparedProofsArray) {
+            JsonObject proof = element.getAsJsonObject();
+            long seqNumber = proof.get("seq-number").getAsLong();
+
+            Collection<ReplicaPhaseMessage> messages = new ArrayList<>();
+            JsonArray messagesArray = proof.get("messages").getAsJsonArray();
+            for (JsonElement message : messagesArray) {
+                String type = message.getAsJsonObject().get("type").getAsString();
+                if ("PRE-PREPARE".equals(type)) {
+                    messages.add(readPrePrepare(message.getAsJsonObject()));
+                } else if ("PREPARE".equals(type)) {
+                    messages.add(readPrepare(message.getAsJsonObject()));
+                }
+            }
+
+            preparedProofs.put(seqNumber, messages);
+        }
+        int replicaId = root.get("replica-id").getAsInt();
+
+        return new DefaultReplicaViewChange(
+                newViewNumber,
+                lastSeqNumber,
+                checkpointProofs,
+                preparedProofs,
+                replicaId);
+    }
+
+    private static ReplicaNewView readNewView(JsonObject root) {
+        int newViewNumber = root.get("new-view-number").getAsInt();
+
+        Collection<ReplicaViewChange> viewChangeProofs = new ArrayList<>();
+        JsonArray viewChangesArray = root.get("view-change-proofs").getAsJsonArray();
+        for (JsonElement element : viewChangesArray) {
+            viewChangeProofs.add(readViewChange(element.getAsJsonObject()));
+        }
+
+        Collection<ReplicaPrePrepare<?>> preparedProofs = new ArrayList<>();
+        JsonArray preparedArray = root.get("prepared-proofs").getAsJsonArray();
+        for (JsonElement element : preparedArray) {
+            preparedProofs.add(readPrePrepare(element.getAsJsonObject()));
+        }
+
+        return new DefaultReplicaNewView(
+                newViewNumber,
+                viewChangeProofs,
+                preparedProofs);
+    }
+
     public void handleIncomingMessage(String data) {
         System.out.println(String.format("Replica %d RECV: %s", this.replicaId(), data));
 
@@ -98,6 +180,15 @@ public class AdditionReplica extends DefaultReplica<AdditionOperation, AdditionR
         } else if ("COMMIT".equals(type)) {
             ReplicaCommit commit = readCommit(root);
             this.recvCommit(commit);
+        } else if ("CHECKPOINT".equals(type)) {
+            ReplicaCheckpoint checkpoint = readCheckpoint(root);
+            this.recvCheckpoint(checkpoint);
+        } else if ("VIEW-CHANGE".equals(type)) {
+            ReplicaViewChange viewChange = readViewChange(root);
+            this.recvViewChange(viewChange);
+        } else if ("NEW-VIEW".equals(type)) {
+            ReplicaNewView newView = readNewView(root);
+            this.recvNewView(newView);
         } else {
             throw new IllegalArgumentException("Unrecognized type: " + type);
         }

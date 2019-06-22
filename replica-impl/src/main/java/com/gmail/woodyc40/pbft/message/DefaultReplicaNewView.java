@@ -5,14 +5,14 @@ import java.util.Collection;
 public class DefaultReplicaNewView implements ReplicaNewView {
     private final int newViewNumber;
     private final Collection<ReplicaViewChange> viewChangeProofs;
-    private final Collection<ReplicaPrePrepare<?>> sequenceProofs;
+    private final Collection<ReplicaPrePrepare<?>> preparedProofs;
 
     public DefaultReplicaNewView(int newViewNumber,
                                  Collection<ReplicaViewChange> viewChangeProofs,
-                                 Collection<ReplicaPrePrepare<?>> sequenceProofs) {
+                                 Collection<ReplicaPrePrepare<?>> preparedProofs) {
         this.newViewNumber = newViewNumber;
         this.viewChangeProofs = viewChangeProofs;
-        this.sequenceProofs = sequenceProofs;
+        this.preparedProofs = preparedProofs;
     }
 
     @Override
@@ -27,6 +27,6 @@ public class DefaultReplicaNewView implements ReplicaNewView {
 
     @Override
     public Collection<ReplicaPrePrepare<?>> preparedProofs() {
-        return this.sequenceProofs;
+        return this.preparedProofs;
     }
 }

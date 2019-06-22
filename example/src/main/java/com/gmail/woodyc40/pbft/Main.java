@@ -49,7 +49,7 @@ public class Main {
                 });
             }
 
-            waitCompletion(client, tickets);
+            waitTimeouts(client, tickets);
         }
     }
 
@@ -59,14 +59,14 @@ public class Main {
         return Math.max(0, TIMEOUT_MS - elapsed);
     }
 
-    private static <O, R, T> void waitCompletion(Client<O, R, T> client, Collection<ClientTicket<O, R>> tickets) {
+    private static <O, R, T> void waitTimeouts(Client<O, R, T> client, Collection<ClientTicket<O, R>> tickets) {
         int completed = 0;
         while (true) {
-            long smallestTime = Long.MAX_VALUE;
+            long minTime = TIMEOUT_MS;
             for (ClientTicket<O, R> ticket : tickets) {
                 long sleepTime = determineSleepTime(ticket);
-                if (sleepTime > 0 && sleepTime < smallestTime) {
-                    smallestTime = sleepTime;
+                if (sleepTime > 0 && sleepTime < minTime) {
+                    minTime = sleepTime;
                 }
 
                 if (ticket.result().isDone()) {
@@ -82,7 +82,25 @@ public class Main {
             }
 
             try {
-                Thread.sleep(smallestTime);
+                Thread.sleep(minTime);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+    }
+
+    private static <O, R, T> void waitTimeouts(Replica<O, R, T> replica) {
+        while (true) {
+            long minTime = TIMEOUT_MS;
+            for (ReplicaRequestKey key : replica.activeTimers()) {
+                long waitTime = replica.checkTimeout(key);
+                if (waitTime > 0 && waitTime < minTime) {
+                    minTime = waitTime;
+                }
+            }
+
+            try {
+                Thread.sleep(minTime);
             } catch (InterruptedException e) {
                 break;
             }
@@ -90,22 +108,24 @@ public class Main {
     }
 
     private static void setupReplicas(JedisPool pool) {
-        CountDownLatch readyLatch = new CountDownLatch(REPLICA_COUNT);
-        for (int i = 0; i < REPLICA_COUNT; i++) {
-            DefaultReplicaMessageLog log = new DefaultReplicaMessageLog(100, 100, 200);
-            AdditionReplicaEncoder replicaEncoder = new AdditionReplicaEncoder();
-            NoopDigester digester = new NoopDigester();
-            AdditionReplicaTransport replicaTransport = new AdditionReplicaTransport(pool, REPLICA_COUNT);
+        CountDownLatch readyLatch = new CountDownLatch(REPLICA_COUNT - 1);
 
+        AdditionReplicaEncoder replicaEncoder = new AdditionReplicaEncoder();
+        NoopDigester digester = new NoopDigester();
+        AdditionReplicaTransport replicaTransport = new AdditionReplicaTransport(pool, REPLICA_COUNT);
+
+        for (int i = 1; i < REPLICA_COUNT; i++) {
+            DefaultReplicaMessageLog log = new DefaultReplicaMessageLog(100, 100, 200);
             AdditionReplica replica = new AdditionReplica(
                     i,
                     TOLERANCE,
+                    TIMEOUT_MS,
                     log,
                     replicaEncoder,
                     digester,
                     replicaTransport,
                     i == 0);
-            Thread thread = new Thread(() -> {
+            Thread listenerThread = new Thread(() -> {
                 try (Jedis jedis = pool.getResource()) {
                     String channel = "replica-" + replica.replicaId();
                     JedisPubSub listener = new JedisPubSub() {
@@ -119,8 +139,12 @@ public class Main {
                     jedis.subscribe(listener, channel);
                 }
             });
-            thread.setDaemon(true);
-            thread.start();
+            listenerThread.setDaemon(true);
+            listenerThread.start();
+
+            Thread timeoutThread = new Thread(() -> waitTimeouts(replica));
+            timeoutThread.setDaemon(true);
+            timeoutThread.start();
         }
 
         try {
