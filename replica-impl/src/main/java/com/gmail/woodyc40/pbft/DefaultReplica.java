@@ -218,6 +218,11 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
         ReplicaRequest<O> request = prePrepare.request();
         long seqNumber = prePrepare.seqNumber();
 
+        byte[] computedDigest = this.digester.digest(request);
+        if (!Arrays.equals(digest, computedDigest)) {
+            return;
+        }
+
         ReplicaTicket<O, R> ticket = this.log.getTicket(currentViewNumber, seqNumber);
         if (ticket != null) {
             for (Object message : ticket.messages()) {
@@ -233,11 +238,6 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
             }
         } else {
             ticket = this.log.newTicket(currentViewNumber, seqNumber);
-        }
-
-        byte[] computedDigest = this.digester.digest(request);
-        if (!Arrays.equals(digest, computedDigest)) {
-            return;
         }
 
         ticket.append(prePrepare);
