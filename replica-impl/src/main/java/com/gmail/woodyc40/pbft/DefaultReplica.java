@@ -446,6 +446,8 @@ public abstract class DefaultReplica<O, R, T> implements Replica<O, R, T> {
                     digest,
                     this.replicaId);
             this.sendPrepare(prepare);
+
+            ticket.append(prepare);
         }
 
         this.enterNewView(newViewNumber);
