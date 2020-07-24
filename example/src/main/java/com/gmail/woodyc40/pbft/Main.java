@@ -20,7 +20,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class Main {
     private static final int TOLERANCE = 1;
-    private static final long TIMEOUT_MS = 500;
+    private static final long TIMEOUT_MS = 1000;
     private static final int REPLICA_COUNT = 3 * TOLERANCE + 1;
 
     public static void main(String[] args) throws InterruptedException {
@@ -33,7 +33,7 @@ public class Main {
             Set<ClientTicket<AdditionOperation, AdditionResult>> tickets = new HashSet<>();
 
             Client<AdditionOperation, AdditionResult, String> client = setupClient(pool);
-            for (int i = 1; i <= 1; i++) {
+            for (int i = 1; i <= 3; i++) {
                 AdditionOperation operation = new AdditionOperation(i, i);
                 ClientTicket<AdditionOperation, AdditionResult> ticket = client.sendRequest(operation);
                 tickets.add(ticket);
@@ -46,6 +46,8 @@ public class Main {
                         System.out.println("==========================");
                         System.out.println("==========================");
                     }
+                }).exceptionally(t -> {
+                    throw new RuntimeException(t);
                 });
             }
 
@@ -60,7 +62,8 @@ public class Main {
     }
 
     private static <O, R, T> void waitTimeouts(Client<O, R, T> client, Collection<ClientTicket<O, R>> tickets) {
-        int completed = 0;
+        Set<ClientTicket<O, R>> completed = new HashSet<>();
+
         while (true) {
             long minTime = TIMEOUT_MS;
             for (ClientTicket<O, R> ticket : tickets) {
@@ -70,14 +73,14 @@ public class Main {
                 }
 
                 if (ticket.result().isDone()) {
-                    completed++;
+                    completed.add(ticket);
                     continue;
                 }
 
                 client.checkTimeout(ticket);
             }
 
-            if (completed == tickets.size()) {
+            if (completed.size() == tickets.size()) {
                 break;
             }
 

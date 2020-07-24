@@ -14,12 +14,12 @@ public class DefaultReplicaRequestKey implements ReplicaRequestKey {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
+        if (!(o instanceof ReplicaRequestKey)) return false;
 
-        DefaultReplicaRequestKey that = (DefaultReplicaRequestKey) o;
+        ReplicaRequestKey that = (ReplicaRequestKey) o;
 
-        if (this.timestamp != that.timestamp) return false;
-        return this.clientId != null ? this.clientId.equals(that.clientId) : that.clientId == null;
+        if (this.timestamp != that.timestamp()) return false;
+        return this.clientId.equals(that.clientId());
     }
 
     @Override

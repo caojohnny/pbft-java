@@ -19,7 +19,7 @@ public class AdditionClient extends DefaultClient<AdditionOperation, AdditionRes
     }
 
     public void handleIncomingMessage(String data) {
-        System.out.println(String.format("Client %s RECV: %s", this.clientId(), data));
+        // System.out.println(String.format("RECV: CLIENT %s: %s", this.clientId(), data));
 
         Gson gson = new Gson();
         JsonObject root = gson.fromJson(data, JsonObject.class);

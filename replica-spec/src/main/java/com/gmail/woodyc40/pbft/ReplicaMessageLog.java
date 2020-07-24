@@ -33,13 +33,13 @@ public interface ReplicaMessageLog {
      * Obtains an already completed ticket from the cached
      * tickets in this log.
      *
-     * @param clientId  the client that the ticket served
-     * @param timestamp the timestamp of the request
-     * @param <O>       the requested operation type
-     * @param <R>       the requested result type
+     * @param key the key used to reference the ticket from
+     *            the client
+     * @param <O> the requested operation type
+     * @param <R> the requested result type
      * @return the cached ticket
      */
-    @Nullable <O, R> ReplicaTicket<O, R> getTicketFromCache(String clientId, long timestamp);
+    @Nullable <O, R> ReplicaTicket<O, R> getTicketFromCache(ReplicaRequestKey key);
 
     /**
      * Obtains a pending request in the given view with the
@@ -71,12 +71,15 @@ public interface ReplicaMessageLog {
      * given view and sequence numbers and stores it until
      * a checkpoint consensus has been reached.
      *
+     * @param key        the replica request key used to
+     *                   reference the ticket from the
+     *                   client that dispatched the request
      * @param viewNumber the view number
      * @param seqNumber  the sequence number
      * @return {@code true} if a request was successfully
      * removed
      */
-    boolean completeTicket(int viewNumber, long seqNumber);
+    boolean completeTicket(ReplicaRequestKey key, int viewNumber, long seqNumber);
 
     /**
      * Adds the checkpoint message to the log, clearing the
@@ -108,14 +111,21 @@ public interface ReplicaMessageLog {
      * Processes a view change message, adding it to the
      * log and deciding whether or not to bandwagon.
      *
-     * @param viewChange the message to add
-     * @param tolerance  the number of faulty nodes the
-     *                   state machine system is capable
-     *                   of tolerating, {@code f}
-     * @return {@code true} if this replica should
-     * bandwagon and also send a view change
+     * @param viewChange    the message to add
+     * @param curReplicaId  the current replica accepting
+     *                      the view change
+     * @param curViewNumber the current view number of the
+     *                      replica accepting the view
+     *                      change
+     * @param tolerance     the number of faulty nodes the
+     *                      state machine system is capable
+     *                      of tolerating, {@code f}
+     * @return a smallest view number that is being voted
+     * if this replica should bandwagon, otherwise an
+     * invalid view number to indicate that this replica
+     * should not bandwagon
      */
-    boolean acceptViewChange(ReplicaViewChange viewChange, int tolerance);
+    ReplicaViewChangeResult acceptViewChange(ReplicaViewChange viewChange, int curReplicaId, int curViewNumber, int tolerance);
 
     /**
      * Checks to see if the message log indicates that
@@ -142,8 +152,10 @@ public interface ReplicaMessageLog {
      * low water mark.
      *
      * @param newView the message to process
+     * @return {@code true} if the new view is valid and it
+     * should be further processed
      */
-    void acceptNewView(ReplicaNewView newView);
+    boolean acceptNewView(ReplicaNewView newView);
 
     /**
      * Determines whether or not to buffer the next request

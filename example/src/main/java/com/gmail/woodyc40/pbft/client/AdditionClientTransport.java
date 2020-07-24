@@ -31,7 +31,7 @@ public class AdditionClientTransport implements ClientTransport<String> {
 
     @Override
     public void sendRequest(int replicaId, String request) {
-        System.out.println(String.format("Client SEND -> %d: %s", replicaId, request));
+        System.out.println(String.format("SEND: CLIENT -> %d: %s", replicaId, request));
 
         String channel = toChannel(replicaId);
         try (Jedis jedis = this.pool.getResource()) {

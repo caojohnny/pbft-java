@@ -33,7 +33,7 @@ public class AdditionReplicaTransport implements ReplicaTransport<String> {
 
     @Override
     public void sendMessage(int replicaId, String data) {
-        System.out.println(String.format("Replica SEND -> %d: %s", replicaId, data));
+        System.out.println(String.format("SEND: REPLICA -> %d: %s", replicaId, data));
 
         String channel = toChannel(replicaId);
         try (Jedis jedis = this.pool.getResource()) {
@@ -57,7 +57,7 @@ public class AdditionReplicaTransport implements ReplicaTransport<String> {
 
     @Override
     public void sendReply(String clientId, String reply) {
-        System.out.println(String.format("Replica SEND -> %s: %s", clientId, reply));
+        System.out.println(String.format("SEND: REPLY -> %s: %s", clientId, reply));
 
         try (Jedis jedis = this.pool.getResource()) {
             jedis.publish(clientId, reply);

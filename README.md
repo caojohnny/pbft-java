@@ -119,191 +119,363 @@ can be found in the `pbft-java-example` module.
 Here is the output:
 
 ```
-Client SEND -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Client SEND -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Client SEND -> 1: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Client SEND -> 2: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 1 RECV: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Client SEND -> 3: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 2 RECV: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 3 RECV: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Client SEND -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Client SEND -> 1: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Client SEND -> 2: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 1 RECV: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 2 RECV: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Client SEND -> 3: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 3 RECV: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
-Replica SEND -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
-Replica SEND -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
-Replica SEND -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
-Replica SEND -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
-Replica SEND -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
-Replica 2 RECV: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
-Replica 2 RECV: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
-Replica SEND -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
-Replica 3 RECV: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
-Replica 1 RECV: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
-Replica SEND -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
-Replica 1 RECV: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
-Replica SEND -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
-Replica SEND -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
-Replica 3 RECV: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
-Replica SEND -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
-Replica 2 RECV: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
-Replica SEND -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
-Replica 3 RECV: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
-Replica SEND -> 0: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
-Replica SEND -> 2: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
-Replica SEND -> 3: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
-Replica 2 RECV: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
-Replica 3 RECV: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
-Client SEND -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Client SEND -> 1: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 1 RECV: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Client SEND -> 2: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Client SEND -> 3: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 2 RECV: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 3 RECV: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 1: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 1: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"PRE-PREPARE","view-number":1,"seq-number":0,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 2: {"type":"PRE-PREPARE","view-number":1,"seq-number":0,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 3: {"type":"PRE-PREPARE","view-number":1,"seq-number":0,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 3 RECV: {"type":"PRE-PREPARE","view-number":1,"seq-number":0,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 1 RECV: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"PRE-PREPARE","view-number":1,"seq-number":1,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 2: {"type":"PRE-PREPARE","view-number":1,"seq-number":1,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":3}
-Replica SEND -> 1: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":3}
-Replica SEND -> 2: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":3}
-Replica 2 RECV: {"type":"PRE-PREPARE","view-number":1,"seq-number":0,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":2}
-Replica SEND -> 3: {"type":"PRE-PREPARE","view-number":1,"seq-number":1,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 1: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":2}
-Replica 3 RECV: {"type":"PRE-PREPARE","view-number":1,"seq-number":1,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 3: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":2}
-Replica 1 RECV: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":3}
-Replica 2 RECV: {"type":"PRE-PREPARE","view-number":1,"seq-number":1,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"PRE-PREPARE","view-number":1,"seq-number":2,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 2: {"type":"PRE-PREPARE","view-number":1,"seq-number":2,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 0: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":2}
-Replica SEND -> 3: {"type":"PRE-PREPARE","view-number":1,"seq-number":2,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica SEND -> 1: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":3}
-Replica SEND -> 1: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":2}
-Replica 1 RECV: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":3}
-Replica SEND -> 3: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":2}
-Replica 1 RECV: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":2}
-Replica 2 RECV: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":3}
-Replica SEND -> 2: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":3}
-Replica SEND -> 0: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":2}
-Replica SEND -> 0: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":1}
-Replica SEND -> 2: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":1}
-Replica SEND -> 1: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":2}
-Replica SEND -> 3: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":2}
-Replica SEND -> 3: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":1}
-Replica 2 RECV: {"type":"PRE-PREPARE","view-number":1,"seq-number":2,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 1 RECV: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":2}
-Replica 3 RECV: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":2}
-Replica SEND -> 0: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":3}
-Replica SEND -> 0: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":2}
-Replica 1 RECV: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":3}
-Replica SEND -> 1: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":2}
-Replica SEND -> 0: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":1}
-Replica SEND -> 1: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":3}
-Replica SEND -> 2: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":1}
-Replica SEND -> 3: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":2}
-Replica SEND -> 2: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":3}
-Replica SEND -> 3: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":1}
-Replica 1 RECV: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":2}
-Replica 2 RECV: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":1}
-Replica 3 RECV: {"type":"PRE-PREPARE","view-number":1,"seq-number":2,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
-Replica 1 RECV: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":2}
-Replica 2 RECV: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":3}
-Replica 1 RECV: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":3}
-Replica SEND -> 0: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":3}
-Replica SEND -> 0: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":2}
-Replica SEND -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":1,"result":2}
-Replica SEND -> 1: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":2}
-Client client-0 RECV: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":1,"result":2}
-Replica SEND -> 1: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":3}
-Replica SEND -> 0: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":1}
-Replica SEND -> 2: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":1}
-Replica SEND -> 3: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":2}
-Replica SEND -> 3: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":1}
-Replica 2 RECV: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":1}
-Replica SEND -> 2: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":3}
-Replica 1 RECV: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":2}
-Replica 3 RECV: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":2}
-Replica 1 RECV: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":3}
-Replica SEND -> 0: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":3}
-Replica SEND -> 0: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":1}
-Replica 2 RECV: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":3}
-Replica SEND -> 2: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":1}
-Replica SEND -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":2,"result":2}
-Replica SEND -> 3: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":1}
-Replica SEND -> 1: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":3}
-Replica 1 RECV: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":3}
-Replica SEND -> 2: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":3}
-Replica SEND -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":1,"result":2}
-Replica SEND -> 0: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":2}
-Replica SEND -> 1: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":2}
-Replica 3 RECV: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":2}
-Replica 1 RECV: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":2}
-Replica 3 RECV: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":1}
-Replica SEND -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":3,"result":2}
-Replica SEND -> 3: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":2}
-Replica SEND -> 0: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":3}
-Replica 2 RECV: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":1}
-Replica SEND -> 1: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":3}
-Replica SEND -> 2: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":3}
-Replica 1 RECV: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":3}
-Replica 3 RECV: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":2}
-Replica 2 RECV: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":3}
-Replica SEND -> 0: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":3}
-Replica SEND -> 1: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":3}
-Replica SEND -> 0: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":2}
-Replica 1 RECV: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":3}
-Replica SEND -> 2: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":3}
-Replica SEND -> 1: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":2}
-Replica SEND -> 3: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":2}
-Replica 3 RECV: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":1}
-Replica 2 RECV: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":1}
-Replica 3 RECV: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":2}
-Replica 1 RECV: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":2}
-Client client-0 RECV: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":2,"result":2}
-Replica SEND -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":1,"result":2}
-Replica SEND -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":3,"result":2}
-Replica 2 RECV: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":3}
+SEND: CLIENT -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: CLIENT -> 0: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: CLIENT -> 0: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: CLIENT -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: CLIENT -> 1: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: CLIENT -> 2: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: CLIENT -> 3: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: CLIENT -> 0: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: CLIENT -> 1: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: CLIENT -> 2: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: CLIENT -> 3: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: CLIENT -> 0: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: CLIENT -> 1: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: CLIENT -> 2: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: CLIENT -> 3: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: CLIENT -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: CLIENT -> 1: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: CLIENT -> 2: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: CLIENT -> 3: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: CLIENT -> 0: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: CLIENT -> 1: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: CLIENT -> 2: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: CLIENT -> 3: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: CLIENT -> 0: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: CLIENT -> 1: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: CLIENT -> 2: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: CLIENT -> 3: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
+SEND: REPLICA -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
+SEND: REPLICA -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}
+SEND: REPLICA -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 0: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}],"prepared-proofs":[]}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 2: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}],"prepared-proofs":[]}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 3: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}],"prepared-proofs":[]}
+SEND: REPLICA -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 0: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 2: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
+SEND: REPLICA -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 3: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 0: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}],"prepared-proofs":[]}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 0: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 1: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 2: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}
+SEND: REPLICA -> 3: {"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2}
+SEND: REPLICA -> 2: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}],"prepared-proofs":[]}
+SEND: REPLICA -> 3: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}],"prepared-proofs":[]}
+SEND: REPLICA -> 0: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
+SEND: REPLICA -> 2: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
+SEND: REPLICA -> 3: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
+SEND: REPLICA -> 0: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}],"prepared-proofs":[]}
+SEND: REPLICA -> 2: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}],"prepared-proofs":[]}
+SEND: REPLICA -> 3: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}],"prepared-proofs":[]}
+SEND: REPLICA -> 0: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
+SEND: REPLICA -> 2: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
+SEND: REPLICA -> 3: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
+SEND: REPLICA -> 0: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}],"prepared-proofs":[]}
+SEND: REPLICA -> 2: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}],"prepared-proofs":[]}
+SEND: REPLICA -> 3: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3}],"prepared-proofs":[]}
+SEND: REPLICA -> 0: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
+SEND: REPLICA -> 2: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
+SEND: REPLICA -> 3: {"type":"NEW-VIEW","new-view-number":1,"view-change-proofs":[{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":2},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":3},{"type":"VIEW-CHANGE","new-view-number":1,"last-seq-number":0,"checkpoint-proofs":[],"prepared-proofs":[],"replica-id":1}],"prepared-proofs":[]}
+SEND: CLIENT -> 0: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: CLIENT -> 1: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: CLIENT -> 2: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 1: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: CLIENT -> 3: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 1: {"type":"REQUEST","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"PRE-PREPARE","view-number":1,"seq-number":0,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 2: {"type":"PRE-PREPARE","view-number":1,"seq-number":0,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 3: {"type":"PRE-PREPARE","view-number":1,"seq-number":0,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":3}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":2}
+SEND: REPLICA -> 2: {"type":"PREPARE","view-number":1,"seq-number":0,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"PRE-PREPARE","view-number":1,"seq-number":1,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 2: {"type":"PRE-PREPARE","view-number":1,"seq-number":1,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 3: {"type":"PRE-PREPARE","view-number":1,"seq-number":1,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":3}
+SEND: CLIENT -> 0: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: CLIENT -> 1: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":2}
+SEND: CLIENT -> 2: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"PRE-PREPARE","view-number":1,"seq-number":2,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":2}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":3}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":2}
+SEND: CLIENT -> 3: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 3: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":3}
+SEND: CLIENT -> 0: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 1: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":3}
+SEND: CLIENT -> 1: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: CLIENT -> 2: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: CLIENT -> 3: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 2: {"type":"PREPARE","view-number":1,"seq-number":1,"digest":"","replica-id":3}
+SEND: REPLICA -> 1: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":2}
+SEND: REPLICA -> 2: {"type":"PRE-PREPARE","view-number":1,"seq-number":2,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 1: {"type":"REQUEST","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"PRE-PREPARE","view-number":1,"seq-number":2,"digest":"","operation":{"first":1,"second":1},"timestamp":0,"client":"client-0"}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"REQUEST","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 3: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":1}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":3}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":1}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":3}
+SEND: REPLICA -> 2: {"type":"PREPARE","view-number":1,"seq-number":2,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":0,"digest":"","replica-id":1}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":3}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":2,"result":2}
+SEND: REPLICA -> 0: {"type":"PRE-PREPARE","view-number":1,"seq-number":3,"digest":"","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":3}
+SEND: REPLICA -> 2: {"type":"PRE-PREPARE","view-number":1,"seq-number":3,"digest":"","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"PRE-PREPARE","view-number":1,"seq-number":3,"digest":"","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":2}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":3,"result":2}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":1,"result":2}
 ==========================
 ==========================
 1 + 1 = 2
 ==========================
 ==========================
-Replica SEND -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":2,"result":2}
-Replica 3 RECV: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":1}
-Replica 3 RECV: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":1}
-Replica 2 RECV: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":3}
-Replica 2 RECV: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":3}
-Replica SEND -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":2,"result":2}
-Replica 3 RECV: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":2}
-Replica 3 RECV: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":2}
-Replica SEND -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":3,"result":2}
-Client client-0 RECV: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":1,"result":2}
-Client client-0 RECV: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":3,"result":2}
-Client client-0 RECV: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":1,"result":2}
-Client client-0 RECV: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":3,"result":2}
-Client client-0 RECV: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":2,"result":2}
-Client client-0 RECV: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":2,"result":2}
-Client client-0 RECV: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":3,"result":2}
+SEND: REPLICA -> 1: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":1}
+SEND: REPLICA -> 2: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":1}
+SEND: REPLICA -> 3: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":2}
+SEND: REPLICA -> 3: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":1}
+SEND: REPLICA -> 0: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":1}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":1}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":1,"digest":"","replica-id":1}
+SEND: REPLICA -> 1: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"PRE-PREPARE","view-number":1,"seq-number":4,"digest":"","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 2: {"type":"CHECKPOINT","last-seq-number":0,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":2}
+SEND: REPLICA -> 2: {"type":"PRE-PREPARE","view-number":1,"seq-number":4,"digest":"","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":2}
+SEND: REPLICA -> 3: {"type":"PRE-PREPARE","view-number":1,"seq-number":4,"digest":"","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"PRE-PREPARE","view-number":1,"seq-number":5,"digest":"","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 2: {"type":"PRE-PREPARE","view-number":1,"seq-number":5,"digest":"","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":3,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":3,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":3,"digest":"","replica-id":3}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":3,"digest":"","replica-id":2}
+SEND: REPLICA -> 3: {"type":"PRE-PREPARE","view-number":1,"seq-number":5,"digest":"","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 2: {"type":"PREPARE","view-number":1,"seq-number":3,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"PREPARE","view-number":1,"seq-number":3,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"PRE-PREPARE","view-number":1,"seq-number":6,"digest":"","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 2: {"type":"PRE-PREPARE","view-number":1,"seq-number":6,"digest":"","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":2,"result":2}
+SEND: REPLICA -> 3: {"type":"PRE-PREPARE","view-number":1,"seq-number":6,"digest":"","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":3,"result":2}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":4,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"PRE-PREPARE","view-number":1,"seq-number":7,"digest":"","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":4,"digest":"","replica-id":3}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":4,"digest":"","replica-id":2}
+SEND: REPLICA -> 2: {"type":"PRE-PREPARE","view-number":1,"seq-number":7,"digest":"","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 3: {"type":"PREPARE","view-number":1,"seq-number":4,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":5,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":5,"digest":"","replica-id":2}
+SEND: REPLICA -> 3: {"type":"PREPARE","view-number":1,"seq-number":5,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":4,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"PRE-PREPARE","view-number":1,"seq-number":7,"digest":"","operation":{"first":2,"second":2},"timestamp":1,"client":"client-0"}
+SEND: REPLICA -> 2: {"type":"PREPARE","view-number":1,"seq-number":4,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":3,"digest":"","replica-id":2}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":1,"result":2}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":5,"digest":"","replica-id":3}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":5,"digest":"","replica-id":3}
+SEND: REPLICA -> 2: {"type":"PREPARE","view-number":1,"seq-number":5,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":3,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"PRE-PREPARE","view-number":1,"seq-number":8,"digest":"","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":3,"digest":"","replica-id":3}
+SEND: REPLICA -> 2: {"type":"PRE-PREPARE","view-number":1,"seq-number":8,"digest":"","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":3,"digest":"","replica-id":3}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":3,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":6,"digest":"","replica-id":3}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":6,"digest":"","replica-id":3}
+SEND: REPLICA -> 2: {"type":"PREPARE","view-number":1,"seq-number":6,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":3,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":6,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":6,"digest":"","replica-id":2}
+SEND: REPLICA -> 3: {"type":"PREPARE","view-number":1,"seq-number":6,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":4,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"PRE-PREPARE","view-number":1,"seq-number":8,"digest":"","operation":{"first":3,"second":3},"timestamp":2,"client":"client-0"}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":4,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":1}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":4,"digest":"","replica-id":3}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":1}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":5,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":2,"digest":"","replica-id":1}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":5,"digest":"","replica-id":3}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":1,"result":2}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":5,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":3,"digest":"","replica-id":1}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":7,"digest":"","replica-id":3}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":3,"digest":"","replica-id":1}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":7,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":7,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":7,"digest":"","replica-id":2}
+SEND: REPLICA -> 2: {"type":"PREPARE","view-number":1,"seq-number":7,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":3,"digest":"","replica-id":1}
+SEND: REPLICA -> 3: {"type":"PREPARE","view-number":1,"seq-number":7,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":4,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":6,"digest":"","replica-id":3}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":4,"digest":"","replica-id":2}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":4,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":6,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":5,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":4,"digest":"","replica-id":1}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":6,"digest":"","replica-id":3}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":5,"digest":"","replica-id":2}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":4,"digest":"","replica-id":1}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":8,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":5,"digest":"","replica-id":2}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":4,"digest":"","replica-id":1}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":8,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"PREPARE","view-number":1,"seq-number":8,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"PREPARE","view-number":1,"seq-number":8,"digest":"","replica-id":2}
+SEND: REPLICA -> 2: {"type":"PREPARE","view-number":1,"seq-number":8,"digest":"","replica-id":3}
+SEND: REPLICA -> 3: {"type":"PREPARE","view-number":1,"seq-number":8,"digest":"","replica-id":2}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":3,"result":2}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":6,"digest":"","replica-id":2}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":5,"digest":"","replica-id":1}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":6,"digest":"","replica-id":2}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":1,"client-id":"client-0","replica-id":3,"result":4}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":5,"digest":"","replica-id":1}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":6,"digest":"","replica-id":2}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":5,"digest":"","replica-id":1}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":0,"client-id":"client-0","replica-id":2,"result":2}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":7,"digest":"","replica-id":3}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":1,"client-id":"client-0","replica-id":1,"result":4}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":7,"digest":"","replica-id":3}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":1,"client-id":"client-0","replica-id":2,"result":4}
+==========================
+==========================
+2 + 2 = 4
+==========================
+==========================
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":7,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":7,"digest":"","replica-id":2}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":7,"digest":"","replica-id":3}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":6,"digest":"","replica-id":1}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":7,"digest":"","replica-id":2}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":2,"client-id":"client-0","replica-id":3,"result":6}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":2,"client-id":"client-0","replica-id":2,"result":6}
+==========================
+==========================
+3 + 3 = 6
+==========================
+==========================
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":8,"digest":"","replica-id":2}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":8,"digest":"","replica-id":2}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":8,"digest":"","replica-id":2}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":1,"client-id":"client-0","replica-id":2,"result":4}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":6,"digest":"","replica-id":1}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":6,"digest":"","replica-id":1}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":2,"client-id":"client-0","replica-id":2,"result":6}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":7,"digest":"","replica-id":1}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":7,"digest":"","replica-id":1}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":8,"digest":"","replica-id":3}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":1,"client-id":"client-0","replica-id":2,"result":4}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":7,"digest":"","replica-id":1}
+SEND: REPLICA -> 1: {"type":"COMMIT","view-number":1,"seq-number":8,"digest":"","replica-id":3}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":8,"digest":"","replica-id":3}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":2,"client-id":"client-0","replica-id":1,"result":6}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":1,"client-id":"client-0","replica-id":1,"result":4}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":1,"client-id":"client-0","replica-id":3,"result":4}
+SEND: REPLICA -> 0: {"type":"COMMIT","view-number":1,"seq-number":8,"digest":"","replica-id":1}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":2,"client-id":"client-0","replica-id":3,"result":6}
+SEND: REPLICA -> 2: {"type":"COMMIT","view-number":1,"seq-number":8,"digest":"","replica-id":1}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":1,"client-id":"client-0","replica-id":3,"result":4}
+SEND: REPLICA -> 3: {"type":"COMMIT","view-number":1,"seq-number":8,"digest":"","replica-id":1}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":2,"client-id":"client-0","replica-id":2,"result":6}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":2,"client-id":"client-0","replica-id":1,"result":6}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":2,"client-id":"client-0","replica-id":3,"result":6}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":1,"client-id":"client-0","replica-id":1,"result":4}
+SEND: REPLY -> client-0: {"type":"REPLY","view-number":1,"timestamp":2,"client-id":"client-0","replica-id":1,"result":6}
 ```
 
 # Credits

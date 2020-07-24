@@ -89,7 +89,7 @@ public class DefaultReplicaTicket<O, R> implements ReplicaTicket<O, R> {
     public boolean isCommittedLocal(int tolerance) {
         // this is checked after the PREPARE phase is
         // chcked in DefaultReplica so it is safe to
-        // assume that {@code prepareed} is true
+        // assume that {@code prepared} is true
         final int requiredCommits = 2 * tolerance + 1;
         int commits = 0;
         for (Object message : this.messages) {

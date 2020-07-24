@@ -162,7 +162,7 @@ public class AdditionReplica extends DefaultReplica<AdditionOperation, AdditionR
     }
 
     public void handleIncomingMessage(String data) {
-        System.out.println(String.format("Replica %d RECV: %s", this.replicaId(), data));
+        // System.out.println(String.format("RECV: REPLICA %d: %s", this.replicaId(), data));
 
         Gson gson = new Gson();
         JsonObject root = gson.fromJson(data, JsonObject.class);
