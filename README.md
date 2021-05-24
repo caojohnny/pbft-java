@@ -48,7 +48,7 @@ changing are already true.
 # Building
 
 ``` shell
-git clone https://github.com/AgentTroll/pbft-java.git
+git clone https://github.com/caojohnny/pbft-java.git
 cd pbft-java
 mvn clean install
 ```
